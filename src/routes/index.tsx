@@ -38,7 +38,7 @@ const proximosPassos = [
     icone: "heart-bold",
     title: "Servir",
     desc: "Quero me tornar um voluntário",
-    proximo: "Nossa equipe de voluntários vai te apresentar os ministérios.",
+    proximo: "Nossa equipe de voluntários vai te apresentar os departamentos.",
   },
   {
     id: "gc",
