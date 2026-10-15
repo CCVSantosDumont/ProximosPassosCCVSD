@@ -77,18 +77,30 @@ async function registrarFalhas(tarefas: Promise<unknown>[]) {
 }
 
 export const submitRegistration = createServerFn({ method: "POST" })
-  .validator((data) => registrationSchema.parse(data))
+  .validator((data) => {
+    const r = registrationSchema.safeParse(data);
+    if (!r.success) {
+      console.error("Inscrição recusada na validação:", JSON.stringify(r.error.issues));
+      throw new Error("Alguns dados não foram aceitos. Atualize a página e tente de novo.");
+    }
+    return r.data;
+  })
   .handler(async ({ data }) => {
     const passos = data.proximosPassos;
 
     // O banco é a fonte da verdade: se gravar, a inscrição está garantida
-    await db()`
-      insert into inscricoes
-        (nome, email, telefone, estado_civil, bairro, cidade, primeira_vez, passos, dias_gc, faixa_etaria)
-      values
-        (${data.nome}, ${data.email}, ${data.telefone}, ${data.estadoCivil}, ${data.bairro},
-         ${data.cidade}, ${data.primeiraVez === "Sim"}, ${passos}, ${data.diasGC}, ${data.faixaEtaria})
-    `;
+    try {
+      await db()`
+        insert into inscricoes
+          (nome, email, telefone, estado_civil, bairro, cidade, primeira_vez, passos, dias_gc, faixa_etaria)
+        values
+          (${data.nome}, ${data.email}, ${data.telefone}, ${data.estadoCivil}, ${data.bairro},
+           ${data.cidade}, ${data.primeiraVez === "Sim"}, ${passos}, ${data.diasGC}, ${data.faixaEtaria})
+      `;
+    } catch (err) {
+      console.error("Falha ao gravar a inscrição no Neon:", err);
+      throw new Error("Não conseguimos salvar sua inscrição agora. Tente de novo em instantes.");
+    }
 
     const payload = {
       nome: data.nome,

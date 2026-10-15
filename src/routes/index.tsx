@@ -195,7 +195,9 @@ function Index() {
       window.scrollTo({ top: 0 });
     } catch (err) {
       console.error(err);
-      toast.error("Não foi possível concluir a inscrição. Tente novamente.");
+      // Mensagens do servidor já vêm prontas para o usuário; erros de rede não
+      const msg = err instanceof Error && !/fetch|network/i.test(err.message) ? err.message : "";
+      toast.error(msg || "Sem conexão com o servidor. Confira sua internet e tente de novo.");
     } finally {
       setLoading(false);
     }
