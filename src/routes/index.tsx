@@ -239,8 +239,8 @@ function Index() {
       >
         <div className="flex flex-col gap-5">
           <div className="flex items-center justify-between">
-            <span className="inline-flex items-center rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-[11px] font-semibold tracking-[0.12em] text-foreground">
-              CCVIDEIRA SANTOS DUMONT
+            <span className="font-heading text-base font-bold tracking-tight text-foreground">
+              CCVideira Santos Dumont
             </span>
             <span className="text-xs font-medium text-muted-foreground" aria-live="polite">
               {done ? "Concluído" : `Passo ${etapa + 1} de ${etapas.length}`}

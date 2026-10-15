@@ -202,17 +202,14 @@ function Login({ onEntrar }: { onEntrar: () => Promise<void> }) {
     <div className="relative mx-auto flex min-h-screen w-full max-w-md flex-col px-6 pb-10 pt-10">
       <div className="flex flex-1 flex-col justify-center gap-8">
         <div className="flex flex-col items-center gap-4 text-center">
-          <span className="inline-flex size-16 items-center justify-center rounded-2xl border border-white/10 bg-card">
-            <Icone nome="grains-bold" size={32} />
+          <span className="flex size-44 items-center justify-center rounded-full bg-white">
+            <span className="font-logo text-xl leading-none tracking-[-0.02em] text-background">
+              CCVIDEIRA
+            </span>
           </span>
-          <div className="flex flex-col gap-1">
-            <span className="font-heading text-lg font-bold tracking-tight">
-              CCVideira Santos Dumont
-            </span>
-            <span className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
-              Igreja
-            </span>
-          </div>
+          <span className="font-heading text-lg font-bold tracking-tight">
+            CCVideira Santos Dumont
+          </span>
         </div>
         <div className="flex flex-col gap-2 text-center">
           <h1 className="font-heading text-[36px] font-bold leading-[1.05] tracking-tight">
