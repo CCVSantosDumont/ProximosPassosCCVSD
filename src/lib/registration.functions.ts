@@ -30,7 +30,7 @@ const PASSO_LABELS = {
 
 const COURSE_URL =
   "https://comunidadecristavideira.eadplataforma.app/curso/fundamentos-fe-2020-05-13-15-10-51";
-const SENDER_EMAIL = "siidneysolano17@gmail.com";
+const SENDER_EMAIL = "ccvsantosdumont@ccvideira.com.br";
 
 function escapeHtml(value: string) {
   return value
