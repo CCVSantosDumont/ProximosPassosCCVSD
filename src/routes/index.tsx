@@ -8,6 +8,7 @@ import { Icone, type NomeIcone } from "@/components/icone";
 import { Confetti } from "@/components/confetti";
 import { submitRegistration } from "@/lib/registration.functions";
 import { versiculos } from "@/lib/versiculos";
+import { dataNascimentoValida, hojeIso } from "@/lib/idade";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/")({
@@ -17,7 +18,7 @@ export const Route = createFileRoute("/")({
       {
         name: "description",
         content:
-          "Bem-vindo à família CCVideira. Abençoar, conhecer um GC, iniciar um curso e servir. Dê o seu próximo passo.",
+          "Bem-vindo à família CCVideira. Servir, conhecer um GC, iniciar um curso e generosidade. Dê o seu próximo passo.",
       },
       { property: "og:title", content: "CCVideira Santos Dumont — Próximos Passos" },
       {
@@ -33,17 +34,17 @@ export const Route = createFileRoute("/")({
 
 const proximosPassos = [
   {
-    id: "abencoar",
-    icone: "hands-praying-bold",
-    title: "Abençoar",
-    desc: "Faça parte do time que suporta tudo isso",
-    proximo: "Vamos te mostrar como fazer parte do time que mantém a igreja de portas abertas.",
+    id: "servir",
+    icone: "heart-bold",
+    title: "Servir",
+    desc: "Quero me tornar um voluntário",
+    proximo: "Nossa equipe de voluntários vai te apresentar os ministérios.",
   },
   {
     id: "gc",
     icone: "users-three-bold",
     title: "Conhecer um GC",
-    desc: "Quero participar de um Grupo de Crescimento perto de mim",
+    desc: "Quero participar de um Grupo de Crescimento",
     proximo: "Um líder de GC vai te chamar no WhatsApp com um grupo perto de você.",
   },
   {
@@ -54,18 +55,19 @@ const proximosPassos = [
     proximo: "O link do curso gratuito já está a caminho do seu e-mail.",
   },
   {
-    id: "servir",
-    icone: "heart-bold",
-    title: "Servir",
-    desc: "Quero me tornar um voluntário",
-    proximo: "Nossa equipe de voluntários vai te apresentar os ministérios.",
+    id: "generosidade",
+    icone: "hand-coins-bold",
+    title: "Generosidade",
+    desc: "Quero contribuir financeiramente nessa casa.",
+    proximo: "Obrigado por semear nesta casa. Que Deus multiplique a sua generosidade!",
   },
 ] as const satisfies ReadonlyArray<{ id: string; icone: NomeIcone; [k: string]: string }>;
+
+const CHAVE_PIX = "generosidadesd@ccvideira.com.br";
 
 type PassoId = (typeof proximosPassos)[number]["id"];
 
 const diasSemana = ["Segunda", "Terça", "Sexta", "Sábado"] as const;
-const faixasEtarias = ["8-11", "12-14", "15-17", "18-24", "25-35", "36+"] as const;
 const estadosCivis = [
   { value: "solteiro", label: "Solteiro(a)" },
   { value: "casado", label: "Casado(a)" },
@@ -95,7 +97,10 @@ const validacoes = {
     email: z.string().trim().email("Esse e-mail parece incompleto").max(255),
   }),
   sobre: z.object({
-    faixaEtaria: z.string().min(1, "Escolha a sua faixa etária"),
+    dataNascimento: z
+      .string()
+      .min(1, "Informe a sua data de nascimento")
+      .refine((v) => dataNascimentoValida(v), "Confere a sua data de nascimento"),
     estadoCivil: z.string().min(1, "Escolha o seu estado civil"),
   }),
   local: z.object({
@@ -104,6 +109,7 @@ const validacoes = {
   }),
   primeira: z.object({ primeiraVez: z.string().min(1, "Conta pra gente se é sua primeira vez") }),
   dias: z.object({ diasGC: z.array(z.string()).min(1, "Escolha pelo menos um dia") }),
+  pix: z.object({}),
 } as const;
 
 type EtapaId = keyof typeof validacoes;
@@ -118,7 +124,7 @@ const formInicial = {
   primeiraVez: "",
   proximosPassos: [] as PassoId[],
   diasGC: [] as string[],
-  faixaEtaria: "",
+  dataNascimento: "",
 };
 
 // Estilos compartilhados do design (Sleek)
@@ -137,8 +143,10 @@ function Index() {
   const [loading, setLoading] = useState(false);
   const [done, setDone] = useState(false);
 
+  // Dias do GC só para quem escolheu GC; PIX só para quem escolheu Generosidade
   const querGC = form.proximosPassos.includes("gc");
-  const etapas: EtapaId[] = [
+  const querPix = form.proximosPassos.includes("generosidade");
+  const etapasNumeradas: EtapaId[] = [
     "passos",
     "nome",
     "contato",
@@ -147,8 +155,11 @@ function Index() {
     "primeira",
     ...(querGC ? (["dias"] as const) : []),
   ];
+  // A tela do PIX fecha o fluxo e não entra na contagem "Passo X de N"
+  const etapas: EtapaId[] = [...etapasNumeradas, ...(querPix ? (["pix"] as const) : [])];
   const etapaAtual = etapas[Math.min(etapa, etapas.length - 1)];
   const ultima = etapa === etapas.length - 1;
+  const totalPassos = etapasNumeradas.length;
   const primeiroNome = form.nome.trim().split(/\s+/)[0] ?? "";
 
   const set = <K extends keyof typeof form>(campo: K, valor: (typeof form)[K]) =>
@@ -187,7 +198,6 @@ function Index() {
           bairro: form.bairro.trim(),
           cidade: form.cidade.trim(),
           primeiraVez: form.primeiraVez as "Sim" | "Não",
-          faixaEtaria: form.faixaEtaria as (typeof faixasEtarias)[number],
           diasGC: querGC ? (form.diasGC as (typeof diasSemana)[number][]) : [],
         },
       });
@@ -221,11 +231,13 @@ function Index() {
 
   const rotuloBotao = loading
     ? "Enviando..."
-    : ultima
-      ? "Dar meu próximo passo 🎉"
-      : etapaAtual === "passos"
-        ? `Próximo${form.proximosPassos.length ? ` (${form.proximosPassos.length})` : ""}`
-        : "Continuar";
+    : etapaAtual === "pix"
+      ? "Continuar"
+      : ultima
+        ? "Dar meu próximo passo 🎉"
+        : etapaAtual === "passos"
+          ? `Próximo${form.proximosPassos.length ? ` (${form.proximosPassos.length})` : ""}`
+          : "Continuar";
 
   return (
     <div className="relative min-h-screen overflow-hidden bg-background text-foreground">
@@ -243,10 +255,17 @@ function Index() {
               CCVideira Santos Dumont
             </span>
             <span className="text-xs font-medium text-muted-foreground" aria-live="polite">
-              {done ? "Concluído" : `Passo ${etapa + 1} de ${etapas.length}`}
+              {done
+                ? "Concluído"
+                : etapaAtual === "pix"
+                  ? "Generosidade"
+                  : `Passo ${etapa + 1} de ${totalPassos}`}
             </span>
           </div>
-          <Progresso total={etapas.length} atual={done ? etapas.length - 1 : etapa} />
+          <Progresso
+            total={totalPassos}
+            atual={done || etapaAtual === "pix" ? totalPassos - 1 : etapa}
+          />
         </div>
 
         <div
@@ -340,23 +359,17 @@ function Index() {
           {!done && etapaAtual === "sobre" && (
             <>
               <h1 className={cn(titulo, "mt-6")}>Conta um pouquinho sobre você</h1>
-              <Grupo titulo="Faixa etária">
-                <div className="grid grid-cols-3 gap-3">
-                  {faixasEtarias.map((f) => (
-                    <button
-                      type="button"
-                      key={f}
-                      onClick={() => set("faixaEtaria", f)}
-                      aria-pressed={form.faixaEtaria === f}
-                      className={cn(
-                        "h-14 rounded-2xl border text-base transition-all active:scale-95",
-                        form.faixaEtaria === f ? selecionado : naoSelecionado,
-                      )}
-                    >
-                      {f}
-                    </button>
-                  ))}
-                </div>
+              <Grupo titulo="Data de nascimento" htmlFor="nascimento">
+                <input
+                  id="nascimento"
+                  type="date"
+                  autoComplete="bday"
+                  min="1900-01-01"
+                  max={hojeIso()}
+                  value={form.dataNascimento}
+                  onChange={(e) => set("dataNascimento", e.target.value)}
+                  className="h-14 w-full rounded-2xl border border-white/10 bg-input px-5 text-base text-foreground [color-scheme:dark] focus:outline-none focus:ring-2 focus:ring-ring"
+                />
               </Grupo>
               <Grupo titulo="Estado civil">
                 <div className="flex flex-wrap gap-3">
@@ -474,9 +487,11 @@ function Index() {
               </div>
             </>
           )}
+
+          {!done && etapaAtual === "pix" && <EtapaPix />}
         </div>
 
-        <Versiculo />
+        <Versiculo fixo={etapaAtual === "pix" && !done ? versiculoGenerosidade : undefined} />
 
         <div className="fixed inset-x-0 bottom-0 z-10 border-t border-white/10 bg-background/80 backdrop-blur-xl">
           <div className="mx-auto flex w-full max-w-lg gap-3 px-6 py-4">
@@ -599,10 +614,25 @@ function Emoji({ label, children }: { label: string; children: string }) {
   );
 }
 
-function Grupo({ titulo: t, children }: { titulo: string; children: React.ReactNode }) {
+function Grupo({
+  titulo: t,
+  htmlFor,
+  children,
+}: {
+  titulo: string;
+  htmlFor?: string;
+  children: React.ReactNode;
+}) {
+  const classe = "font-heading text-lg font-semibold tracking-tight text-foreground";
   return (
     <div className="mt-6 flex flex-col gap-3">
-      <h2 className="font-heading text-lg font-semibold tracking-tight text-foreground">{t}</h2>
+      {htmlFor ? (
+        <label htmlFor={htmlFor} className={classe}>
+          {t}
+        </label>
+      ) : (
+        <h2 className={classe}>{t}</h2>
+      )}
       {children}
     </div>
   );
@@ -657,7 +687,13 @@ function CampoTexto({
   );
 }
 
-function Versiculo() {
+const versiculoGenerosidade = {
+  texto:
+    "Cada um dê conforme determinou em seu coração, não com tristeza nem por obrigação, pois Deus ama quem dá com alegria.",
+  ref: "2 Coríntios 9:7",
+};
+
+function Versiculo({ fixo }: { fixo?: { texto: string; ref: string } }) {
   const [i, setI] = useState(0);
   useEffect(() => {
     // Começa num versículo aleatório (só no cliente) e troca a cada 9s
@@ -665,10 +701,13 @@ function Versiculo() {
     const t = setInterval(() => setI((n) => (n + 1) % versiculos.length), 9000);
     return () => clearInterval(t);
   }, []);
-  const v = versiculos[i];
+  const v = fixo ?? versiculos[i];
   return (
     <figure className="mt-auto min-h-[8rem] pt-10 text-center" aria-live="polite">
-      <div key={i} className="animate-in fade-in slide-in-from-bottom-2 duration-700">
+      <div
+        key={fixo ? "fixo" : i}
+        className="animate-in fade-in slide-in-from-bottom-2 duration-700"
+      >
         <blockquote className="text-base italic leading-relaxed text-foreground/90">
           “{v.texto}”
         </blockquote>
@@ -677,6 +716,71 @@ function Versiculo() {
         </figcaption>
       </div>
     </figure>
+  );
+}
+
+function EtapaPix() {
+  const [copiado, setCopiado] = useState(false);
+
+  const copiar = async () => {
+    try {
+      await navigator.clipboard.writeText(CHAVE_PIX);
+      setCopiado(true);
+      toast.success("Chave PIX copiada!");
+      setTimeout(() => setCopiado(false), 2500);
+    } catch {
+      toast.error(`Não deu para copiar. A chave é ${CHAVE_PIX}`);
+    }
+  };
+
+  return (
+    <>
+      <div className="mt-8 flex flex-col gap-4">
+        <Emoji label="mãos em oração">🙏</Emoji>
+        <h1 className={titulo}>Sua generosidade abençoa esta casa</h1>
+        <p className="text-lg leading-relaxed text-muted-foreground">
+          Contribua via PIX. Qualquer valor é recebido com gratidão.
+        </p>
+      </div>
+      <div className="mt-4 flex flex-col gap-4 rounded-2xl border border-white/10 bg-card p-5">
+        <div className="flex items-center gap-3">
+          <span className="flex size-12 shrink-0 items-center justify-center rounded-xl bg-white/5">
+            <Icone nome="qr-code-bold" />
+          </span>
+          <div className="flex min-w-0 flex-col gap-0.5">
+            <span className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
+              Chave PIX (e-mail)
+            </span>
+            <span className="break-all font-heading text-lg font-semibold tracking-tight text-foreground select-all">
+              {CHAVE_PIX}
+            </span>
+          </div>
+        </div>
+        <button
+          type="button"
+          onClick={() => void copiar()}
+          className="flex h-14 w-full items-center justify-center gap-2 rounded-2xl bg-white text-base font-semibold text-background transition-all active:scale-[0.98]"
+        >
+          <Icone nome={copiado ? "check-bold" : "copy-bold"} size={20} />
+          {copiado ? "Chave copiada!" : "Copiar chave PIX"}
+        </button>
+      </div>
+      <div className="mt-4 flex flex-col gap-3 rounded-2xl border border-white/10 bg-card/60 p-5">
+        <p className="text-sm font-semibold text-foreground">Como fazer</p>
+        {[
+          "Abra o aplicativo do seu banco e escolha PIX.",
+          "Cole a chave acima e informe o valor que desejar.",
+          "Confirme. Obrigado por fazer parte da família!",
+        ].map((t, i) => (
+          <div key={t} className="flex items-start gap-3 text-sm text-muted-foreground">
+            <span className="flex size-6 shrink-0 items-center justify-center rounded-full bg-white/10 text-xs font-semibold text-foreground">
+              {i + 1}
+            </span>
+            <span>{t}</span>
+          </div>
+        ))}
+      </div>
+    </>
   );
 }
 

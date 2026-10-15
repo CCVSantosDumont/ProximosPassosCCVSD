@@ -12,6 +12,8 @@ import {
   type PassoId,
 } from "@/lib/admin.functions";
 import { cn } from "@/lib/utils";
+import logoCcv from "@/assets/logo-ccv.png";
+import { calcularIdade, ehAniversarioHoje, formatarData } from "@/lib/idade";
 
 export const Route = createFileRoute("/admin")({
   head: () => ({
@@ -24,10 +26,10 @@ export const Route = createFileRoute("/admin")({
 });
 
 const PASSOS: { id: PassoId; label: string; icone: NomeIcone }[] = [
-  { id: "abencoar", label: "Abençoar", icone: "hands-praying-bold" },
+  { id: "servir", label: "Servir", icone: "heart-bold" },
   { id: "gc", label: "Conhecer um GC", icone: "users-three-bold" },
   { id: "curso", label: "Iniciar um Curso", icone: "book-open-text-bold" },
-  { id: "servir", label: "Servir", icone: "heart-bold" },
+  { id: "generosidade", label: "Generosidade", icone: "hand-coins-bold" },
 ];
 const LABEL_PASSO = Object.fromEntries(PASSOS.map((p) => [p.id, p.label])) as Record<
   PassoId,
@@ -81,7 +83,8 @@ function exportarCsv(lista: Inscricao[]) {
     "Primeira vez",
     "Próximos passos",
     "Dias GC",
-    "Faixa etária",
+    "Data de nascimento",
+    "Idade",
   ];
   const linhas = lista.map((i) => [
     new Date(i.data).toLocaleString("pt-BR"),
@@ -94,7 +97,8 @@ function exportarCsv(lista: Inscricao[]) {
     i.primeiraVez ? "Sim" : "Não",
     i.passos.map((p) => LABEL_PASSO[p]).join(", "),
     i.diasGC.join(", "),
-    i.faixaEtaria,
+    i.dataNascimento ? formatarData(i.dataNascimento) : "",
+    i.dataNascimento ? (calcularIdade(i.dataNascimento) ?? "") : "",
   ]);
   const csv = [cab, ...linhas]
     .map((l) => l.map((c) => `"${String(c).replaceAll('"', '""')}"`).join(";"))
@@ -202,10 +206,8 @@ function Login({ onEntrar }: { onEntrar: () => Promise<void> }) {
     <div className="relative mx-auto flex min-h-screen w-full max-w-md flex-col px-6 pb-10 pt-10">
       <div className="flex flex-1 flex-col justify-center gap-8">
         <div className="flex flex-col items-center gap-4 text-center">
-          <span className="flex size-44 items-center justify-center rounded-full bg-white">
-            <span className="font-logo text-xl leading-none tracking-[-0.02em] text-background">
-              CCVIDEIRA
-            </span>
+          <span className="flex size-44 items-center justify-center rounded-full border border-white/20 bg-black">
+            <img src={logoCcv} alt="CCVideira" className="size-full rounded-full object-cover" />
           </span>
           <span className="font-heading text-lg font-bold tracking-tight">
             CCVideira Santos Dumont
@@ -526,6 +528,8 @@ function Kpi({ label, valor }: { label: string; valor: number }) {
 }
 
 function CartaoInscrito({ i }: { i: Inscricao }) {
+  const idade = i.dataNascimento ? calcularIdade(i.dataNascimento) : null;
+  const aniversario = i.dataNascimento ? ehAniversarioHoje(i.dataNascimento) : false;
   return (
     <li className="flex flex-col gap-3 rounded-2xl border border-white/10 bg-card p-4">
       <div className="flex items-start justify-between gap-3">
@@ -538,11 +542,18 @@ function CartaoInscrito({ i }: { i: Inscricao }) {
             {tempoRelativo(i.data)}
           </p>
         </div>
-        {i.primeiraVez && (
-          <span className="shrink-0 rounded-full bg-white px-2.5 py-1 text-xs font-semibold text-background">
-            Primeira vez
-          </span>
-        )}
+        <div className="flex shrink-0 flex-col items-end gap-1.5">
+          {i.primeiraVez && (
+            <span className="rounded-full bg-white px-2.5 py-1 text-xs font-semibold text-background">
+              Primeira vez
+            </span>
+          )}
+          {aniversario && (
+            <span className="rounded-full border border-white/30 px-2.5 py-1 text-xs font-semibold">
+              🎂 Aniversário hoje
+            </span>
+          )}
+        </div>
       </div>
       <div className="flex flex-wrap gap-1.5">
         {i.passos.map((p) => (
@@ -556,7 +567,11 @@ function CartaoInscrito({ i }: { i: Inscricao }) {
         {i.bairro} · {i.cidade}
       </p>
       <dl className="grid grid-cols-2 gap-x-4 gap-y-2 text-sm">
-        <Dado rotulo="Faixa etária" valor={i.faixaEtaria} />
+        <Dado
+          rotulo="Idade"
+          valor={idade !== null ? `${idade} ${idade === 1 ? "ano" : "anos"}` : "—"}
+        />
+        <Dado rotulo="Nascimento" valor={i.dataNascimento ? formatarData(i.dataNascimento) : "—"} />
         <Dado rotulo="Estado civil" valor={ESTADO_CIVIL[i.estadoCivil] ?? i.estadoCivil} />
         {i.diasGC.length > 0 && <Dado rotulo="Dias para GC" valor={i.diasGC.join(", ")} />}
         <Dado rotulo="WhatsApp" valor={i.telefone} />

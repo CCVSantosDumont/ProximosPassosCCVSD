@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>GenerosidadePIX</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800;900&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@100;200;300;400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <script src="https://code.iconify.design/iconify-icon/3.0.0/iconify-icon.min.js"></script>
+    <style type="text/tailwindcss">
+      @theme inline {
+        --color-background: var(--background);
+        --color-foreground: var(--foreground);
+        --color-primary: var(--primary);
+        --color-primary-foreground: var(--primary-foreground);
+        --color-secondary: var(--secondary);
+        --color-secondary-foreground: var(--secondary-foreground);
+        --color-muted: var(--muted);
+        --color-muted-foreground: var(--muted-foreground);
+        --color-accent: var(--accent);
+        --color-accent-foreground: var(--accent-foreground);
+        --color-destructive: var(--destructive);
+        --color-destructive-foreground: var(--destructive-foreground);
+        --color-card: var(--card);
+        --color-card-foreground: var(--card-foreground);
+        --color-popover: var(--popover);
+        --color-popover-foreground: var(--popover-foreground);
+        --color-border: var(--border);
+        --color-input: var(--input);
+        --color-ring: var(--ring);
+        --color-chart-1: var(--chart-1);
+        --color-chart-2: var(--chart-2);
+        --color-chart-3: var(--chart-3);
+        --color-chart-4: var(--chart-4);
+        --color-chart-5: var(--chart-5);
+
+        --font-sans: var(--font-sans);
+        --font-heading: var(--font-heading, var(--font-sans));
+        --font-serif: var(--font-serif);
+        --font-mono: var(--font-mono);
+      }
+
+      @theme {
+        --radius-xs: calc(var(--radius) - 8px);
+        --radius-sm: calc(var(--radius) - 4px);
+        --radius-md: calc(var(--radius) - 2px);
+        --radius-lg: var(--radius);
+        --radius-xl: calc(var(--radius) + 4px);
+        --radius-2xl: calc(var(--radius) + 8px);
+        --radius-3xl: calc(var(--radius) + 16px);
+        --radius-4xl: calc(var(--radius) + 24px);
+      }
+
+      * {
+        corner-shape: var(--shape, round);
+      }
+
+      .rounded-full,
+      .rounded-none,
+      .rounded-t-full,
+      .rounded-t-none,
+      .rounded-r-full,
+      .rounded-r-none,
+      .rounded-b-full,
+      .rounded-b-none,
+      .rounded-l-full,
+      .rounded-l-none,
+      .rounded-s-full,
+      .rounded-s-none,
+      .rounded-e-full,
+      .rounded-e-none,
+      .rounded-tl-full,
+      .rounded-tl-none,
+      .rounded-tr-full,
+      .rounded-tr-none,
+      .rounded-bl-full,
+      .rounded-bl-none,
+      .rounded-br-full,
+      .rounded-br-none,
+      .rounded-ss-full,
+      .rounded-ss-none,
+      .rounded-se-full,
+      .rounded-se-none,
+      .rounded-es-full,
+      .rounded-es-none,
+      .rounded-ee-full,
+      .rounded-ee-none {
+        corner-shape: round;
+      }
+
+      @utility rounded-* {
+        border-radius: calc(
+          --value(--radius-*, [length], [percentage]) * var(--shape-multiplier, 1)
+        );
+      }
+      @utility rounded-t-* {
+        border-top-left-radius: calc(
+          --value(--radius-*, [length], [percentage]) * var(--shape-multiplier, 1)
+        );
+        border-top-right-radius: calc(
+          --value(--radius-*, [length], [percentage]) * var(--shape-multiplier, 1)
+        );
+      }
+      @utility rounded-r-* {
+        border-top-right-radius: calc(
+          --value(--radius-*, [length], [percentage]) * var(--shape-multiplier, 1)
+        );
+        border-bottom-right-radius: calc(
+          --value(--radius-*, [length], [percentage]) * var(--shape-multiplier, 1)
+        );
+      }
+      @utility rounded-b-* {
+        border-bottom-right-radius: calc(
+          --value(--radius-*, [length], [percentage]) * var(--shape-multiplier, 1)
+        );
+        border-bottom-left-radius: calc(
+          --value(--radius-*, [length], [percentage]) * var(--shape-multiplier, 1)
+        );
+      }
+      @utility rounded-l-* {
+        border-top-left-radius: calc(
+          --value(--radius-*, [length], [percentage]) * var(--shape-multiplier, 1)
+        );
+        border-bottom-left-radius: calc(
+          --value(--radius-*, [length], [percentage]) * var(--shape-multiplier, 1)
+        );
+      }
+      @utility rounded-tl-* {
+        border-top-left-radius: calc(
+          --value(--radius-*, [length], [percentage]) * var(--shape-multiplier, 1)
+        );
+      }
+      @utility rounded-tr-* {
+        border-top-right-radius: calc(
+          --value(--radius-*, [length], [percentage]) * var(--shape-multiplier, 1)
+        );
+      }
+      @utility rounded-bl-* {
+        border-bottom-left-radius: calc(
+          --value(--radius-*, [length], [percentage]) * var(--shape-multiplier, 1)
+        );
+      }
+      @utility rounded-br-* {
+        border-bottom-right-radius: calc(
+          --value(--radius-*, [length], [percentage]) * var(--shape-multiplier, 1)
+        );
+      }
+      @utility rounded-s-* {
+        border-start-start-radius: calc(
+          --value(--radius-*, [length], [percentage]) * var(--shape-multiplier, 1)
+        );
+        border-end-start-radius: calc(
+          --value(--radius-*, [length], [percentage]) * var(--shape-multiplier, 1)
+        );
+      }
+      @utility rounded-e-* {
+        border-start-end-radius: calc(
+          --value(--radius-*, [length], [percentage]) * var(--shape-multiplier, 1)
+        );
+        border-end-end-radius: calc(
+          --value(--radius-*, [length], [percentage]) * var(--shape-multiplier, 1)
+        );
+      }
+      @utility rounded-ss-* {
+        border-start-start-radius: calc(
+          --value(--radius-*, [length], [percentage]) * var(--shape-multiplier, 1)
+        );
+      }
+      @utility rounded-se-* {
+        border-start-end-radius: calc(
+          --value(--radius-*, [length], [percentage]) * var(--shape-multiplier, 1)
+        );
+      }
+      @utility rounded-es-* {
+        border-end-start-radius: calc(
+          --value(--radius-*, [length], [percentage]) * var(--shape-multiplier, 1)
+        );
+      }
+      @utility rounded-ee-* {
+        border-end-end-radius: calc(
+          --value(--radius-*, [length], [percentage]) * var(--shape-multiplier, 1)
+        );
+      }
+
+      @layer base {
+        * {
+          @apply border-border outline-ring/50;
+        }
+        body {
+          @apply bg-background text-foreground font-sans;
+        }
+      }
+
+      :root {
+        --shape: squircle;
+        --shape-multiplier: 1;
+
+        --background: #0a0a0a;
+        --foreground: #ffffff;
+        --primary: #ffffff;
+        --primary-foreground: #0a0a0a;
+        --secondary: #1f1f1f;
+        --secondary-foreground: #ffffff;
+        --muted: #171717;
+        --muted-foreground: #9a9a9a;
+        --accent: #262626;
+        --accent-foreground: #ffffff;
+        --destructive: #f5f5f5;
+        --destructive-foreground: #0a0a0a;
+        --card: #141414;
+        --card-foreground: #ffffff;
+        --popover: #1a1a1a;
+        --popover-foreground: #ffffff;
+        --border: #262626;
+        --input: #161616;
+        --ring: #ffffff;
+        --chart-1: #ffffff;
+        --chart-2: #bdbdbd;
+        --chart-3: #8a8a8a;
+        --chart-4: #5c5c5c;
+        --chart-5: #3a3a3a;
+
+        --font-sans: "Inter", sans-serif;
+        --font-heading: "Space Grotesk", sans-serif;
+        --font-serif: "Playfair Display", serif;
+        --font-mono: "JetBrains Mono", monospace;
+
+        --radius: 1rem;
+      }
+
+      @supports (corner-shape: squircle) {
+        :root {
+          --shape-multiplier: 2.5;
+        }
+      }
+
+      /* Prevent layout shift for icons without explicit dimensions */
+      iconify-icon:not([width]):not([height]) {
+        display: inline-block;
+        width: 1em;
+        height: 1em;
+      }
+
+      /* Hide scrollbars */
+      *,
+      *::before,
+      *::after {
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+      }
+      *::-webkit-scrollbar {
+        display: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div
+      class="relative min-h-screen bg-background text-foreground flex flex-col px-6 pt-6 pb-32 overflow-hidden"
+    >
+      <div
+        style="
+          background-image: radial-gradient(#ffffff 1px, transparent 1px);
+          background-size: 4px 4px;
+        "
+        class="pointer-events-none absolute inset-0 opacity-[0.06]"
+      ></div>
+      <div class="relative flex flex-col gap-5">
+        <div class="flex items-center justify-between">
+          <span class="font-heading text-base font-bold tracking-tight text-foreground"
+            >CCVideira Santos Dumont</span
+          ><span class="text-xs font-medium text-muted-foreground">Generosidade</span>
+        </div>
+        <div
+          role="progressbar"
+          class="flex gap-1.5"
+          aria-valuemax="7"
+          aria-valuemin="0"
+          aria-valuenow="7"
+        >
+          <div class="h-1.5 flex-1 rounded-full bg-white"></div>
+          <div class="h-1.5 flex-1 rounded-full bg-white"></div>
+          <div class="h-1.5 flex-1 rounded-full bg-white"></div>
+          <div class="h-1.5 flex-1 rounded-full bg-white"></div>
+          <div class="h-1.5 flex-1 rounded-full bg-white"></div>
+          <div class="h-1.5 flex-1 rounded-full bg-white"></div>
+          <div class="h-1.5 flex-1 rounded-full bg-white"></div>
+        </div>
+        <div class="mt-8 flex flex-col gap-4">
+          <span role="img" class="text-6xl leading-none" aria-label="coração">🙏</span>
+          <h1
+            class="font-heading text-[36px] leading-[1.05] font-bold tracking-tight text-foreground"
+          >
+            Sua generosidade abençoa esta casa
+          </h1>
+          <p class="text-lg leading-relaxed text-muted-foreground">
+            Contribua via PIX. Qualquer valor é recebido com gratidão.
+          </p>
+        </div>
+        <div class="mt-4 flex flex-col gap-4 rounded-2xl border border-white/10 bg-card p-5">
+          <div class="flex items-center gap-3">
+            <span class="flex size-12 shrink-0 items-center justify-center rounded-xl bg-white/5"
+              ><iconify-icon icon="ph:qr-code-bold" width="24" height="24"></iconify-icon
+            ></span>
+            <div class="flex flex-col gap-0.5">
+              <span class="text-xs font-semibold tracking-[0.2em] text-muted-foreground uppercase"
+                >Chave PIX (e-mail)</span
+              ><span
+                class="break-all font-heading text-lg font-semibold tracking-tight text-foreground"
+                >generosidadesd@ccvideira.com.br</span
+              >
+            </div>
+          </div>
+          <button
+            type="button"
+            class="flex h-14 w-full items-center justify-center gap-2 rounded-2xl bg-white text-base font-semibold text-background"
+          >
+            <iconify-icon icon="ph:copy-bold" width="20" height="20"></iconify-icon>Copiar chave PIX
+          </button>
+        </div>
+        <div class="flex flex-col gap-3 rounded-2xl border border-white/10 bg-card/60 p-5">
+          <p class="text-sm font-semibold text-foreground">Como fazer</p>
+          <div class="flex items-start gap-3 text-sm text-muted-foreground">
+            <span
+              class="flex size-6 shrink-0 items-center justify-center rounded-full bg-white/10 text-xs font-semibold text-foreground"
+              >1</span
+            ><span>Abra o aplicativo do seu banco e escolha PIX.</span>
+          </div>
+          <div class="flex items-start gap-3 text-sm text-muted-foreground">
+            <span
+              class="flex size-6 shrink-0 items-center justify-center rounded-full bg-white/10 text-xs font-semibold text-foreground"
+              >2</span
+            ><span>Cole a chave acima e informe o valor que desejar.</span>
+          </div>
+          <div class="flex items-start gap-3 text-sm text-muted-foreground">
+            <span
+              class="flex size-6 shrink-0 items-center justify-center rounded-full bg-white/10 text-xs font-semibold text-foreground"
+              >3</span
+            ><span>Confirme. Obrigado por fazer parte da família!</span>
+          </div>
+        </div>
+      </div>
+      <div class="relative mt-auto pt-10 text-center">
+        <p class="text-base italic leading-relaxed text-foreground/90">
+          "Cada um dê conforme determinou em seu coração, não com tristeza nem por obrigação, pois
+          Deus ama quem dá com alegria."
+        </p>
+        <p class="mt-2 text-xs font-semibold tracking-[0.2em] text-muted-foreground uppercase">
+          2 Coríntios 9:7
+        </p>
+      </div>
+      <div
+        class="fixed inset-x-0 bottom-0 z-10 flex gap-3 border-t border-white/10 bg-background/80 backdrop-blur-xl px-6 py-4"
+      >
+        <button
+          type="button"
+          class="flex size-14 shrink-0 items-center justify-center rounded-2xl border border-white/10 bg-card text-foreground"
+          aria-label="Voltar"
+        >
+          <iconify-icon icon="ph:arrow-left-bold" width="20" height="20"></iconify-icon></button
+        ><button
+          type="button"
+          class="flex h-14 flex-1 items-center justify-center rounded-2xl bg-white text-base font-semibold text-background"
+        >
+          Continuar
+        </button>
+      </div>
+    </div>
+  </body>
+</html>

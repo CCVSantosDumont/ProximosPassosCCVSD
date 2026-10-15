@@ -1,6 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { db } from "./db.server";
+import { calcularIdade, dataNascimentoValida, formatarData } from "./idade";
 import { SHEETS_URL } from "./sheets";
 
 const registrationSchema = z
@@ -12,9 +13,11 @@ const registrationSchema = z
     bairro: z.string().trim().min(2).max(100),
     cidade: z.string().trim().min(2).max(100),
     primeiraVez: z.enum(["Sim", "Não"]),
-    proximosPassos: z.array(z.enum(["abencoar", "gc", "curso", "servir"])).min(1),
+    proximosPassos: z.array(z.enum(["generosidade", "gc", "curso", "servir"])).min(1),
     diasGC: z.array(z.enum(["Segunda", "Terça", "Sexta", "Sábado"])),
-    faixaEtaria: z.enum(["8-11", "12-14", "15-17", "18-24", "25-35", "36+"]),
+    dataNascimento: z
+      .string()
+      .refine((v) => dataNascimentoValida(v), "Data de nascimento inválida"),
   })
   .refine((d) => !d.proximosPassos.includes("gc") || d.diasGC.length > 0, {
     message: "Escolha pelo menos um dia para o GC",
@@ -22,7 +25,7 @@ const registrationSchema = z
   });
 
 const PASSO_LABELS = {
-  abencoar: "Abençoar",
+  generosidade: "Generosidade",
   gc: "Conhecer um GC",
   curso: "Iniciar um Curso",
   servir: "Servir",
@@ -92,10 +95,10 @@ export const submitRegistration = createServerFn({ method: "POST" })
     try {
       await db()`
         insert into inscricoes
-          (nome, email, telefone, estado_civil, bairro, cidade, primeira_vez, passos, dias_gc, faixa_etaria)
+          (nome, email, telefone, estado_civil, bairro, cidade, primeira_vez, passos, dias_gc, data_nascimento)
         values
           (${data.nome}, ${data.email}, ${data.telefone}, ${data.estadoCivil}, ${data.bairro},
-           ${data.cidade}, ${data.primeiraVez === "Sim"}, ${passos}, ${data.diasGC}, ${data.faixaEtaria})
+           ${data.cidade}, ${data.primeiraVez === "Sim"}, ${passos}, ${data.diasGC}, ${data.dataNascimento})
       `;
     } catch (err) {
       console.error("Falha ao gravar a inscrição no Neon:", err);
@@ -112,13 +115,13 @@ export const submitRegistration = createServerFn({ method: "POST" })
       cidade: data.cidade,
       primeiraVez: data.primeiraVez,
       // Chaves antigas mantidas para não quebrar o Apps Script da planilha:
-      // decidir = Abençoar, conectar = Conhecer um GC, conhecer = Iniciar um Curso
-      decidir: passos.includes("abencoar") ? "Sim" : "Não",
+      // decidir = Generosidade, conectar = Conhecer um GC, conhecer = Iniciar um Curso
+      decidir: passos.includes("generosidade") ? "Sim" : "Não",
       conectar: passos.includes("gc") ? "Sim" : "Não",
       conhecer: passos.includes("curso") ? "Sim" : "Não",
       servir: passos.includes("servir") ? "Sim" : "Não",
       diasGC: data.diasGC,
-      faixaEtaria: data.faixaEtaria,
+      dataNascimento: data.dataNascimento,
       data: new Date().toISOString(),
     };
 
@@ -156,7 +159,7 @@ export const submitRegistration = createServerFn({ method: "POST" })
         <p><strong>Primeira vez:</strong> ${data.primeiraVez}</p>
         <p><strong>Próximos passos:</strong> ${data.proximosPassos.map((p) => PASSO_LABELS[p]).join(", ")}</p>
         <p><strong>Dias de GC:</strong> ${data.diasGC.join(", ") || "—"}</p>
-        <p><strong>Faixa etária:</strong> ${data.faixaEtaria}</p>
+        <p><strong>Data de nascimento:</strong> ${formatarData(data.dataNascimento)} (${calcularIdade(data.dataNascimento)} anos)</p>
       </div>`;
 
     const apiKey = process.env["BREVO_API_KEY"];

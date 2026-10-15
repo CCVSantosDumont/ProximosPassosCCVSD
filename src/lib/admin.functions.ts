@@ -3,7 +3,7 @@ import { deleteCookie, getCookie, setCookie } from "@tanstack/react-start/server
 import { z } from "zod";
 import { db } from "./db.server";
 
-export type PassoId = "abencoar" | "gc" | "curso" | "servir";
+export type PassoId = "generosidade" | "gc" | "curso" | "servir";
 
 export type Inscricao = {
   id: string;
@@ -17,7 +17,8 @@ export type Inscricao = {
   primeiraVez: boolean;
   passos: PassoId[];
   diasGC: string[];
-  faixaEtaria: string;
+  /** "AAAA-MM-DD"; null em inscrições anteriores à troca da faixa etária */
+  dataNascimento: string | null;
 };
 
 const COOKIE = "ccv_admin";
@@ -91,7 +92,8 @@ export const listarInscricoes = createServerFn({ method: "GET" }).handler(async 
 
   const rows = (await db()`
     select id, criado_em, nome, email, telefone, estado_civil, bairro, cidade,
-           primeira_vez, passos, dias_gc, faixa_etaria, status
+           primeira_vez, passos, dias_gc, status,
+           to_char(data_nascimento, 'YYYY-MM-DD') as data_nascimento
     from inscricoes
     order by criado_em desc
     limit 5000
@@ -109,7 +111,7 @@ export const listarInscricoes = createServerFn({ method: "GET" }).handler(async 
     primeiraVez: Boolean(r.primeira_vez),
     passos: r.passos as PassoId[],
     diasGC: r.dias_gc as string[],
-    faixaEtaria: String(r.faixa_etaria),
+    dataNascimento: (r.data_nascimento as string | null) ?? null,
   }));
   return { autenticado: true as const, inscricoes };
 });

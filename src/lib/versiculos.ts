@@ -20,7 +20,8 @@ export const versiculos = [
     ref: "Salmos 119:105",
   },
   {
-    texto: "Cada um dê conforme determinou em seu coração, pois Deus ama quem dá com alegria.",
+    texto:
+      "Cada um dê conforme determinou em seu coração, não com tristeza nem por obrigação, pois Deus ama quem dá com alegria.",
     ref: "2 Coríntios 9:7",
   },
   { texto: "Sirvam uns aos outros mediante o amor.", ref: "Gálatas 5:13" },
