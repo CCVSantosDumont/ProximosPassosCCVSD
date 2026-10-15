@@ -106,3 +106,28 @@
   50% { transform: translateY(-12px); }
 }
 .animate-float { animation: float 6s ease-in-out infinite; }
+
+@keyframes confetti-fall {
+  0% { transform: translateY(-10vh) rotate(0deg); opacity: 1; }
+  100% { transform: translateY(110vh) rotate(720deg); opacity: 0.2; }
+}
+.confetti-piece {
+  position: absolute;
+  top: -5vh;
+  border-radius: 2px;
+  animation-name: confetti-fall;
+  animation-timing-function: cubic-bezier(0.3, 0.6, 0.6, 1);
+  animation-fill-mode: forwards;
+}
+
+@keyframes pop {
+  0% { transform: scale(0.6); opacity: 0; }
+  60% { transform: scale(1.12); opacity: 1; }
+  100% { transform: scale(1); }
+}
+.animate-pop { animation: pop 0.5s var(--transition-smooth) both; }
+
+@media (prefers-reduced-motion: reduce) {
+  .confetti-piece { display: none; }
+  .animate-float, .animate-pop { animation: none; }
+}

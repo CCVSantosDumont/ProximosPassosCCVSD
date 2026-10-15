@@ -73,17 +73,32 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
       { title: "CCVideira Santos Dumont" },
-      { name: "description", content: "Launchpad Imersão creates AI-powered sales pages and lead capture forms for events." },
-      { name: "author", content: "Lovable" },
+      {
+        name: "description",
+        content: "Bem-vindo à família CCVideira Santos Dumont. Dê o seu próximo passo.",
+      },
       { property: "og:title", content: "CCVideira Santos Dumont" },
-      { property: "og:description", content: "Launchpad Imersão creates AI-powered sales pages and lead capture forms for events." },
+      {
+        property: "og:description",
+        content: "Bem-vindo à família CCVideira Santos Dumont. Dê o seu próximo passo.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
-      { name: "twitter:site", content: "@Lovable" },
       { name: "twitter:title", content: "CCVideira Santos Dumont" },
-      { name: "twitter:description", content: "Launchpad Imersão creates AI-powered sales pages and lead capture forms for events." },
-      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/048e536a-26a3-4ca3-b133-038f786579da/id-preview-4392170e--2052ad79-df90-4f39-9241-b2909da18917.lovable.app-1778270743557.png" },
-      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/048e536a-26a3-4ca3-b133-038f786579da/id-preview-4392170e--2052ad79-df90-4f39-9241-b2909da18917.lovable.app-1778270743557.png" },
+      {
+        name: "twitter:description",
+        content: "Bem-vindo à família CCVideira Santos Dumont. Dê o seu próximo passo.",
+      },
+      {
+        property: "og:image",
+        content:
+          "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/048e536a-26a3-4ca3-b133-038f786579da/id-preview-4392170e--2052ad79-df90-4f39-9241-b2909da18917.lovable.app-1778270743557.png",
+      },
+      {
+        name: "twitter:image",
+        content:
+          "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/048e536a-26a3-4ca3-b133-038f786579da/id-preview-4392170e--2052ad79-df90-4f39-9241-b2909da18917.lovable.app-1778270743557.png",
+      },
     ],
     links: [
       {
@@ -100,7 +115,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 
 function RootShell({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="pt-BR">
       <head>
         <HeadContent />
       </head>
