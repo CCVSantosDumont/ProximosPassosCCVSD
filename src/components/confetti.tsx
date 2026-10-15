@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-const CORES = ["#22c55e", "#facc15", "#f472b6", "#60a5fa", "#ffffff", "#a78bfa"];
+const CORES = ["#ffffff", "#e5e5e5", "#a3a3a3", "#737373", "#fafafa", "#d4d4d4"];
 
 type Peca = {
   id: number;

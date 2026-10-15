@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PainelDaStaff</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800;900&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@100;200;300;400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <script src="https://code.iconify.design/iconify-icon/3.0.0/iconify-icon.min.js"></script>
+    <style type="text/tailwindcss">
+      @theme inline {
+        --color-background: var(--background);
+        --color-foreground: var(--foreground);
+        --color-primary: var(--primary);
+        --color-primary-foreground: var(--primary-foreground);
+        --color-secondary: var(--secondary);
+        --color-secondary-foreground: var(--secondary-foreground);
+        --color-muted: var(--muted);
+        --color-muted-foreground: var(--muted-foreground);
+        --color-accent: var(--accent);
+        --color-accent-foreground: var(--accent-foreground);
+        --color-destructive: var(--destructive);
+        --color-destructive-foreground: var(--destructive-foreground);
+        --color-card: var(--card);
+        --color-card-foreground: var(--card-foreground);
+        --color-popover: var(--popover);
+        --color-popover-foreground: var(--popover-foreground);
+        --color-border: var(--border);
+        --color-input: var(--input);
+        --color-ring: var(--ring);
+        --color-chart-1: var(--chart-1);
+        --color-chart-2: var(--chart-2);
+        --color-chart-3: var(--chart-3);
+        --color-chart-4: var(--chart-4);
+        --color-chart-5: var(--chart-5);
+
+        --font-sans: var(--font-sans);
+        --font-heading: var(--font-heading, var(--font-sans));
+        --font-serif: var(--font-serif);
+        --font-mono: var(--font-mono);
+      }
+
+      @theme {
+        --radius-xs: calc(var(--radius) - 8px);
+        --radius-sm: calc(var(--radius) - 4px);
+        --radius-md: calc(var(--radius) - 2px);
+        --radius-lg: var(--radius);
+        --radius-xl: calc(var(--radius) + 4px);
+        --radius-2xl: calc(var(--radius) + 8px);
+        --radius-3xl: calc(var(--radius) + 16px);
+        --radius-4xl: calc(var(--radius) + 24px);
+      }
+
+      * {
+        corner-shape: var(--shape, round);
+      }
+
+      .rounded-full,
+      .rounded-none,
+      .rounded-t-full,
+      .rounded-t-none,
+      .rounded-r-full,
+      .rounded-r-none,
+      .rounded-b-full,
+      .rounded-b-none,
+      .rounded-l-full,
+      .rounded-l-none,
+      .rounded-s-full,
+      .rounded-s-none,
+      .rounded-e-full,
+      .rounded-e-none,
+      .rounded-tl-full,
+      .rounded-tl-none,
+      .rounded-tr-full,
+      .rounded-tr-none,
+      .rounded-bl-full,
+      .rounded-bl-none,
+      .rounded-br-full,
+      .rounded-br-none,
+      .rounded-ss-full,
+      .rounded-ss-none,
+      .rounded-se-full,
+      .rounded-se-none,
+      .rounded-es-full,
+      .rounded-es-none,
+      .rounded-ee-full,
+      .rounded-ee-none {
+        corner-shape: round;
+      }
+
+      @utility rounded-* {
+        border-radius: calc(
+          --value(--radius-*, [length], [percentage]) * var(--shape-multiplier, 1)
+        );
+      }
+      @utility rounded-t-* {
+        border-top-left-radius: calc(
+          --value(--radius-*, [length], [percentage]) * var(--shape-multiplier, 1)
+        );
+        border-top-right-radius: calc(
+          --value(--radius-*, [length], [percentage]) * var(--shape-multiplier, 1)
+        );
+      }
+      @utility rounded-r-* {
+        border-top-right-radius: calc(
+          --value(--radius-*, [length], [percentage]) * var(--shape-multiplier, 1)
+        );
+        border-bottom-right-radius: calc(
+          --value(--radius-*, [length], [percentage]) * var(--shape-multiplier, 1)
+        );
+      }
+      @utility rounded-b-* {
+        border-bottom-right-radius: calc(
+          --value(--radius-*, [length], [percentage]) * var(--shape-multiplier, 1)
+        );
+        border-bottom-left-radius: calc(
+          --value(--radius-*, [length], [percentage]) * var(--shape-multiplier, 1)
+        );
+      }
+      @utility rounded-l-* {
+        border-top-left-radius: calc(
+          --value(--radius-*, [length], [percentage]) * var(--shape-multiplier, 1)
+        );
+        border-bottom-left-radius: calc(
+          --value(--radius-*, [length], [percentage]) * var(--shape-multiplier, 1)
+        );
+      }
+      @utility rounded-tl-* {
+        border-top-left-radius: calc(
+          --value(--radius-*, [length], [percentage]) * var(--shape-multiplier, 1)
+        );
+      }
+      @utility rounded-tr-* {
+        border-top-right-radius: calc(
+          --value(--radius-*, [length], [percentage]) * var(--shape-multiplier, 1)
+        );
+      }
+      @utility rounded-bl-* {
+        border-bottom-left-radius: calc(
+          --value(--radius-*, [length], [percentage]) * var(--shape-multiplier, 1)
+        );
+      }
+      @utility rounded-br-* {
+        border-bottom-right-radius: calc(
+          --value(--radius-*, [length], [percentage]) * var(--shape-multiplier, 1)
+        );
+      }
+      @utility rounded-s-* {
+        border-start-start-radius: calc(
+          --value(--radius-*, [length], [percentage]) * var(--shape-multiplier, 1)
+        );
+        border-end-start-radius: calc(
+          --value(--radius-*, [length], [percentage]) * var(--shape-multiplier, 1)
+        );
+      }
+      @utility rounded-e-* {
+        border-start-end-radius: calc(
+          --value(--radius-*, [length], [percentage]) * var(--shape-multiplier, 1)
+        );
+        border-end-end-radius: calc(
+          --value(--radius-*, [length], [percentage]) * var(--shape-multiplier, 1)
+        );
+      }
+      @utility rounded-ss-* {
+        border-start-start-radius: calc(
+          --value(--radius-*, [length], [percentage]) * var(--shape-multiplier, 1)
+        );
+      }
+      @utility rounded-se-* {
+        border-start-end-radius: calc(
+          --value(--radius-*, [length], [percentage]) * var(--shape-multiplier, 1)
+        );
+      }
+      @utility rounded-es-* {
+        border-end-start-radius: calc(
+          --value(--radius-*, [length], [percentage]) * var(--shape-multiplier, 1)
+        );
+      }
+      @utility rounded-ee-* {
+        border-end-end-radius: calc(
+          --value(--radius-*, [length], [percentage]) * var(--shape-multiplier, 1)
+        );
+      }
+
+      @layer base {
+        * {
+          @apply border-border outline-ring/50;
+        }
+        body {
+          @apply bg-background text-foreground font-sans;
+        }
+      }
+
+      :root {
+        --shape: squircle;
+        --shape-multiplier: 1;
+
+        --background: #0a0a0a;
+        --foreground: #ffffff;
+        --primary: #ffffff;
+        --primary-foreground: #0a0a0a;
+        --secondary: #1f1f1f;
+        --secondary-foreground: #ffffff;
+        --muted: #171717;
+        --muted-foreground: #9a9a9a;
+        --accent: #262626;
+        --accent-foreground: #ffffff;
+        --destructive: #f5f5f5;
+        --destructive-foreground: #0a0a0a;
+        --card: #141414;
+        --card-foreground: #ffffff;
+        --popover: #1a1a1a;
+        --popover-foreground: #ffffff;
+        --border: #262626;
+        --input: #161616;
+        --ring: #ffffff;
+        --chart-1: #ffffff;
+        --chart-2: #bdbdbd;
+        --chart-3: #8a8a8a;
+        --chart-4: #5c5c5c;
+        --chart-5: #3a3a3a;
+
+        --font-sans: "Inter", sans-serif;
+        --font-heading: "Space Grotesk", sans-serif;
+        --font-serif: "Playfair Display", serif;
+        --font-mono: "JetBrains Mono", monospace;
+
+        --radius: 1rem;
+      }
+
+      @supports (corner-shape: squircle) {
+        :root {
+          --shape-multiplier: 2.5;
+        }
+      }
+
+      /* Prevent layout shift for icons without explicit dimensions */
+      iconify-icon:not([width]):not([height]) {
+        display: inline-block;
+        width: 1em;
+        height: 1em;
+      }
+
+      /* Hide scrollbars */
+      *,
+      *::before,
+      *::after {
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+      }
+      *::-webkit-scrollbar {
+        display: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="min-h-screen bg-background text-foreground pb-10">
+      <header
+        class="sticky top-0 z-10 flex items-center justify-between gap-3 border-b border-white/10 bg-background/85 px-4 py-3 backdrop-blur-xl"
+      >
+        <div class="flex min-w-0 flex-col">
+          <span class="text-[10px] font-semibold tracking-[0.14em] text-muted-foreground uppercase"
+            >CCVideira Santos Dumont</span
+          >
+          <h1 class="font-heading text-xl font-bold tracking-tight text-foreground">
+            Painel da Staff
+          </h1>
+        </div>
+        <div class="flex items-center gap-2">
+          <button
+            type="button"
+            class="flex size-11 items-center justify-center rounded-xl border border-white/10 bg-card"
+            aria-label="Atualizar"
+          >
+            <iconify-icon
+              icon="ph:arrows-clockwise-bold"
+              width="20"
+              height="20"
+            ></iconify-icon></button
+          ><button
+            type="button"
+            class="flex size-11 items-center justify-center rounded-xl border border-white/10 bg-card"
+            aria-label="Sair"
+          >
+            <iconify-icon icon="ph:sign-out-bold" width="20" height="20"></iconify-icon>
+          </button>
+        </div>
+      </header>
+      <main class="flex flex-col gap-5 px-4 pt-4">
+        <section class="grid grid-cols-3 gap-2">
+          <div class="rounded-2xl border border-white/10 bg-card p-3">
+            <span class="text-[11px] font-medium leading-tight text-muted-foreground"
+              >Total de inscrições</span
+            >
+            <p class="font-heading text-2xl font-bold text-foreground">128</p>
+          </div>
+          <div class="rounded-2xl border border-white/10 bg-card p-3">
+            <span class="text-[11px] font-medium leading-tight text-muted-foreground"
+              >Últimos 7 dias</span
+            >
+            <p class="font-heading text-2xl font-bold text-foreground">34</p>
+          </div>
+          <div class="rounded-2xl border border-white/10 bg-card p-3">
+            <span class="text-[11px] font-medium leading-tight text-muted-foreground"
+              >Primeira vez</span
+            >
+            <p class="font-heading text-2xl font-bold text-foreground">57</p>
+          </div>
+        </section>
+        <section class="grid grid-cols-2 gap-2" aria-label="Filtrar por passo">
+          <button
+            type="button"
+            class="flex h-16 items-center justify-between rounded-2xl border border-white/10 bg-card px-4 text-left"
+          >
+            <span class="flex items-center gap-2 text-sm font-medium"
+              ><iconify-icon icon="ph:hands-praying-bold" width="20" height="20"></iconify-icon
+              >Abençoar</span
+            ><span class="font-heading text-xl font-bold">48</span></button
+          ><button
+            type="button"
+            class="flex h-16 items-center justify-between rounded-2xl border border-white bg-white px-4 text-left text-background"
+            aria-pressed
+          >
+            <span class="flex items-center gap-2 text-sm font-semibold"
+              ><iconify-icon icon="ph:users-three-bold" width="20" height="20"></iconify-icon
+              >Conhecer um GC</span
+            ><span class="font-heading text-xl font-bold">61</span></button
+          ><button
+            type="button"
+            class="flex h-16 items-center justify-between rounded-2xl border border-white/10 bg-card px-4 text-left"
+          >
+            <span class="flex items-center gap-2 text-sm font-medium"
+              ><iconify-icon icon="ph:book-open-text-bold" width="20" height="20"></iconify-icon
+              >Iniciar um Curso</span
+            ><span class="font-heading text-xl font-bold">39</span></button
+          ><button
+            type="button"
+            class="flex h-16 items-center justify-between rounded-2xl border border-white/10 bg-card px-4 text-left"
+          >
+            <span class="flex items-center gap-2 text-sm font-medium"
+              ><iconify-icon icon="ph:heart-bold" width="20" height="20"></iconify-icon>Servir</span
+            ><span class="font-heading text-xl font-bold">22</span>
+          </button>
+        </section>
+        <section class="flex flex-col gap-3">
+          <div class="relative">
+            <iconify-icon
+              icon="ph:magnifying-glass-bold"
+              class="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground"
+              width="20"
+              height="20"
+            ></iconify-icon
+            ><input
+              type="search"
+              class="h-12 w-full rounded-xl border border-white/10 bg-input pl-11 pr-4 text-sm text-foreground placeholder:text-muted-foreground/70 focus:outline-none focus:ring-2 focus:ring-ring"
+              placeholder="Buscar nome, telefone ou bairro"
+            />
+          </div>
+          <div class="flex items-center justify-between gap-2">
+            <div class="flex gap-2">
+              <button
+                type="button"
+                class="h-9 rounded-full border border-white/10 bg-card px-3 text-xs font-medium text-foreground"
+              >
+                7 dias</button
+              ><button
+                type="button"
+                class="h-9 rounded-full border border-white bg-white px-3 text-xs font-semibold text-background"
+              >
+                30 dias</button
+              ><button
+                type="button"
+                class="h-9 rounded-full border border-white/10 bg-card px-3 text-xs font-medium text-foreground"
+              >
+                Tudo
+              </button>
+            </div>
+            <button
+              type="button"
+              class="flex h-9 items-center gap-1.5 rounded-full border border-white/10 px-3 text-xs font-medium text-foreground"
+            >
+              <iconify-icon icon="ph:download-simple-bold" width="16" height="16"></iconify-icon
+              >Exportar CSV
+            </button>
+          </div>
+        </section>
+        <section class="flex flex-col gap-3">
+          <div class="flex items-center justify-between">
+            <h2 class="font-heading text-base font-semibold text-foreground">
+              Inscritos <span class="text-muted-foreground font-normal">· 61</span>
+            </h2>
+          </div>
+          <article class="flex flex-col gap-3 rounded-2xl border border-white/10 bg-card p-4">
+            <div class="flex items-start justify-between gap-3">
+              <div class="flex min-w-0 flex-col gap-0.5">
+                <h3 class="font-heading text-lg font-semibold tracking-tight text-foreground">
+                  Maria Oliveira
+                </h3>
+                <span class="text-xs text-muted-foreground">há 2 dias</span>
+              </div>
+              <span
+                class="shrink-0 rounded-full bg-white px-2.5 py-1 text-[11px] font-semibold text-background"
+                >Primeira vez</span
+              >
+            </div>
+            <div class="flex flex-wrap gap-1.5">
+              <span
+                class="rounded-md border border-white/15 bg-white/5 px-2 py-0.5 text-[11px] font-medium text-foreground"
+                >Conhecer um GC</span
+              ><span
+                class="rounded-md border border-white/15 bg-white/5 px-2 py-0.5 text-[11px] font-medium text-foreground"
+                >Iniciar um Curso</span
+              >
+            </div>
+            <dl class="grid grid-cols-2 gap-x-3 gap-y-2 text-xs">
+              <div class="col-span-2 flex items-center gap-1.5 text-muted-foreground">
+                <iconify-icon icon="ph:map-pin-bold" width="14" height="14"></iconify-icon>
+                <dd class="text-foreground">Centro · Santos Dumont</dd>
+              </div>
+              <div class="flex flex-col">
+                <dt class="text-muted-foreground">Faixa etária</dt>
+                <dd class="font-medium text-foreground">25-35</dd>
+              </div>
+              <div class="flex flex-col">
+                <dt class="text-muted-foreground">Estado civil</dt>
+                <dd class="font-medium text-foreground">Casado(a)</dd>
+              </div>
+              <div class="col-span-2 flex flex-col">
+                <dt class="text-muted-foreground">Dias para GC</dt>
+                <dd class="font-medium text-foreground">Terça, Sexta</dd>
+              </div>
+            </dl>
+            <div class="grid grid-cols-[1fr_auto] gap-2 pt-1">
+              <button
+                type="button"
+                class="flex h-12 items-center justify-center gap-2 rounded-xl bg-white text-sm font-semibold text-background"
+              >
+                <iconify-icon icon="ic:baseline-whatsapp" width="20" height="20"></iconify-icon
+                >WhatsApp</button
+              ><button
+                type="button"
+                class="flex size-12 items-center justify-center rounded-xl border border-white/15 text-foreground"
+                aria-label="Enviar e-mail"
+              >
+                <iconify-icon icon="ph:envelope-simple-bold" width="20" height="20"></iconify-icon>
+              </button>
+            </div>
+          </article>
+          <article class="flex flex-col gap-3 rounded-2xl border border-white/10 bg-card p-4">
+            <div class="flex items-start justify-between gap-3">
+              <div class="flex min-w-0 flex-col gap-0.5">
+                <h3 class="font-heading text-lg font-semibold tracking-tight text-foreground">
+                  João Pereira
+                </h3>
+                <span class="text-xs text-muted-foreground">há 5 dias</span>
+              </div>
+            </div>
+            <div class="flex flex-wrap gap-1.5">
+              <span
+                class="rounded-md border border-white/15 bg-white/5 px-2 py-0.5 text-[11px] font-medium text-foreground"
+                >Abençoar</span
+              ><span
+                class="rounded-md border border-white/15 bg-white/5 px-2 py-0.5 text-[11px] font-medium text-foreground"
+                >Servir</span
+              >
+            </div>
+            <dl class="grid grid-cols-2 gap-x-3 gap-y-2 text-xs">
+              <div class="col-span-2 flex items-center gap-1.5 text-muted-foreground">
+                <iconify-icon icon="ph:map-pin-bold" width="14" height="14"></iconify-icon>
+                <dd class="text-foreground">Vila Nova · Santos Dumont</dd>
+              </div>
+              <div class="flex flex-col">
+                <dt class="text-muted-foreground">Faixa etária</dt>
+                <dd class="font-medium text-foreground">36+</dd>
+              </div>
+              <div class="flex flex-col">
+                <dt class="text-muted-foreground">Estado civil</dt>
+                <dd class="font-medium text-foreground">Viúvo(a)</dd>
+              </div>
+              <div class="col-span-2 flex flex-col">
+                <dt class="text-muted-foreground">Dias para GC</dt>
+                <dd class="font-medium text-foreground">Sábado</dd>
+              </div>
+            </dl>
+            <div class="grid grid-cols-[1fr_auto] gap-2 pt-1">
+              <button
+                type="button"
+                class="flex h-12 items-center justify-center gap-2 rounded-xl bg-white text-sm font-semibold text-background"
+              >
+                <iconify-icon icon="ic:baseline-whatsapp" width="20" height="20"></iconify-icon
+                >WhatsApp</button
+              ><button
+                type="button"
+                class="flex size-12 items-center justify-center rounded-xl border border-white/15 text-foreground"
+                aria-label="Enviar e-mail"
+              >
+                <iconify-icon icon="ph:envelope-simple-bold" width="20" height="20"></iconify-icon>
+              </button>
+            </div>
+          </article>
+        </section>
+        <section class="flex flex-col gap-3 rounded-2xl border border-white/10 bg-card p-4">
+          <h2 class="font-heading text-base font-semibold text-foreground">
+            Dias preferidos para GC
+          </h2>
+          <div class="flex flex-col gap-3 text-xs">
+            <div class="flex flex-col gap-1.5">
+              <div class="flex justify-between">
+                <span class="text-foreground">Segunda</span
+                ><span class="text-muted-foreground">18</span>
+              </div>
+              <div class="h-2 w-full rounded-full bg-white/10">
+                <div style="width: 44%" class="h-2 rounded-full bg-white/50"></div>
+              </div>
+            </div>
+            <div class="flex flex-col gap-1.5">
+              <div class="flex justify-between">
+                <span class="text-foreground">Terça</span
+                ><span class="text-muted-foreground">27</span>
+              </div>
+              <div class="h-2 w-full rounded-full bg-white/10">
+                <div style="width: 66%" class="h-2 rounded-full bg-white/70"></div>
+              </div>
+            </div>
+            <div class="flex flex-col gap-1.5">
+              <div class="flex justify-between">
+                <span class="text-foreground">Sexta</span
+                ><span class="text-muted-foreground">41</span>
+              </div>
+              <div class="h-2 w-full rounded-full bg-white/10">
+                <div style="width: 100%" class="h-2 rounded-full bg-white"></div>
+              </div>
+            </div>
+            <div class="flex flex-col gap-1.5">
+              <div class="flex justify-between">
+                <span class="text-foreground">Sábado</span
+                ><span class="text-muted-foreground">33</span>
+              </div>
+              <div class="h-2 w-full rounded-full bg-white/10">
+                <div style="width: 80%" class="h-2 rounded-full bg-white/60"></div>
+              </div>
+            </div>
+          </div>
+        </section>
+        <section class="flex flex-col gap-3 rounded-2xl border border-white/10 bg-card p-4">
+          <h2 class="font-heading text-base font-semibold text-foreground">
+            Bairros com mais inscrições
+          </h2>
+          <ol class="flex flex-col gap-3 text-xs">
+            <li class="flex items-center gap-3">
+              <span class="w-4 text-muted-foreground">1</span
+              ><span class="flex-1 text-foreground">Centro</span
+              ><span class="font-medium text-foreground">24</span>
+            </li>
+            <li class="flex items-center gap-3">
+              <span class="w-4 text-muted-foreground">2</span
+              ><span class="flex-1 text-foreground">Vila Nova</span
+              ><span class="font-medium text-foreground">18</span>
+            </li>
+            <li class="flex items-center gap-3">
+              <span class="w-4 text-muted-foreground">3</span
+              ><span class="flex-1 text-foreground">Bela Vista</span
+              ><span class="font-medium text-foreground">12</span>
+            </li>
+            <li class="flex items-center gap-3">
+              <span class="w-4 text-muted-foreground">4</span
+              ><span class="flex-1 text-foreground">Jardim Esperança</span
+              ><span class="font-medium text-foreground">9</span>
+            </li>
+            <li class="flex items-center gap-3">
+              <span class="w-4 text-muted-foreground">5</span
+              ><span class="flex-1 text-foreground">São José</span
+              ><span class="font-medium text-foreground">7</span>
+            </li>
+          </ol>
+        </section>
+      </main>
+    </div>
+  </body>
+</html>

@@ -2,26 +2,13 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useRef, useState } from "react";
 import { z } from "zod";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { Toaster } from "@/components/ui/sonner";
-import {
-  ArrowLeft,
-  ArrowRight,
-  BookOpen,
-  Check,
-  Gift,
-  HandHeart,
-  Heart,
-  Sparkles,
-  Users,
-} from "lucide-react";
-import heroBg from "@/assets/hero-bg.jpg";
+import { Icone, type NomeIcone } from "@/components/icone";
+import { Confetti } from "@/components/confetti";
 import { submitRegistration } from "@/lib/registration.functions";
 import { versiculos } from "@/lib/versiculos";
-import { Confetti } from "@/components/confetti";
+import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -47,33 +34,33 @@ export const Route = createFileRoute("/")({
 const proximosPassos = [
   {
     id: "abencoar",
-    icon: Heart,
+    icone: "hands-praying-bold",
     title: "Abençoar",
-    desc: "Quero abençoar a igreja e fazer parte do suporte que mantém as atividades",
-    proximo: "Vamos te mostrar como fazer parte do suporte que mantém a igreja de portas abertas.",
+    desc: "Faça parte do time que suporta tudo isso",
+    proximo: "Vamos te mostrar como fazer parte do time que mantém a igreja de portas abertas.",
   },
   {
     id: "gc",
-    icon: Users,
+    icone: "users-three-bold",
     title: "Conhecer um GC",
     desc: "Quero participar de um Grupo de Crescimento perto de mim",
     proximo: "Um líder de GC vai te chamar no WhatsApp com um grupo perto de você.",
   },
   {
     id: "curso",
-    icon: BookOpen,
+    icone: "book-open-text-bold",
     title: "Iniciar um Curso",
     desc: "Quero aprender mais sobre a Palavra de Deus",
-    proximo: "O link do curso já está a caminho do seu e-mail.",
+    proximo: "O link do curso gratuito já está a caminho do seu e-mail.",
   },
   {
     id: "servir",
-    icon: HandHeart,
+    icone: "heart-bold",
     title: "Servir",
     desc: "Quero me tornar um voluntário",
     proximo: "Nossa equipe de voluntários vai te apresentar os ministérios.",
   },
-] as const;
+] as const satisfies ReadonlyArray<{ id: string; icone: NomeIcone; [k: string]: string }>;
 
 type PassoId = (typeof proximosPassos)[number]["id"];
 
@@ -127,12 +114,20 @@ const formInicial = {
   telefone: "",
   estadoCivil: "",
   bairro: "",
-  cidade: "Santos Dumont",
+  cidade: "",
   primeiraVez: "",
   proximosPassos: [] as PassoId[],
   diasGC: [] as string[],
   faixaEtaria: "",
 };
+
+// Estilos compartilhados do design (Sleek)
+const titulo = "font-heading text-[36px] leading-[1.05] font-bold tracking-tight text-foreground";
+const campo =
+  "h-16 w-full rounded-2xl border border-white/10 bg-input text-xl text-foreground placeholder:text-muted-foreground/70 focus:outline-none focus:ring-2 focus:ring-ring";
+const selecionado =
+  "border-white bg-white font-semibold text-background shadow-[0_0_28px_rgba(255,255,255,0.22)]";
+const naoSelecionado = "border-white/10 bg-card font-medium text-foreground hover:border-white/30";
 
 function Index() {
   const sendRegistration = useServerFn(submitRegistration);
@@ -179,6 +174,7 @@ function Index() {
     if (!ultima) {
       setDirecao("frente");
       setEtapa((e) => e + 1);
+      window.scrollTo({ top: 0 });
       return;
     }
     setLoading(true);
@@ -188,12 +184,15 @@ function Index() {
           ...form,
           nome: form.nome.trim(),
           email: form.email.trim(),
+          bairro: form.bairro.trim(),
+          cidade: form.cidade.trim(),
           primeiraVez: form.primeiraVez as "Sim" | "Não",
           faixaEtaria: form.faixaEtaria as (typeof faixasEtarias)[number],
           diasGC: querGC ? (form.diasGC as (typeof diasSemana)[number][]) : [],
         },
       });
       setDone(true);
+      window.scrollTo({ top: 0 });
     } catch (err) {
       console.error(err);
       toast.error("Não foi possível concluir a inscrição. Tente novamente.");
@@ -207,259 +206,312 @@ function Index() {
     setEtapa((e) => Math.max(0, e - 1));
   };
 
+  const recomecar = () => {
+    setForm(formInicial);
+    setEtapa(0);
+    setDone(false);
+  };
+
   const onSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     void avancar();
   };
 
+  const rotuloBotao = loading
+    ? "Enviando..."
+    : ultima
+      ? "Dar meu próximo passo 🎉"
+      : etapaAtual === "passos"
+        ? `Próximo${form.proximosPassos.length ? ` (${form.proximosPassos.length})` : ""}`
+        : "Continuar";
+
   return (
-    <div className="relative flex min-h-screen flex-col overflow-hidden bg-background">
+    <div className="relative min-h-screen overflow-hidden bg-background text-foreground">
       <Toaster theme="dark" position="top-center" />
+      <div className="bg-dots pointer-events-none absolute inset-0 opacity-[0.06]" aria-hidden />
 
-      <div
-        className="pointer-events-none absolute inset-0 opacity-25"
-        style={{
-          backgroundImage: `url(${heroBg})`,
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-        }}
-        aria-hidden
-      />
-      <div className="pointer-events-none absolute inset-0 bg-gradient-aurora" aria-hidden />
-      <div
-        className="pointer-events-none absolute inset-0 bg-gradient-to-b from-background/50 via-background/80 to-background"
-        aria-hidden
-      />
-      <div
-        className="pointer-events-none absolute -left-24 top-1/3 h-72 w-72 rounded-full bg-green-500/10 blur-3xl animate-float"
-        aria-hidden
-      />
-
-      <main className="relative mx-auto flex w-full max-w-2xl flex-1 flex-col px-4 pb-6 pt-6 sm:px-6 sm:pt-10">
-        <header className="mb-6 flex items-center justify-between gap-4">
-          <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-[11px] font-medium uppercase tracking-widest text-muted-foreground">
-            <Sparkles className="h-3.5 w-3.5 text-green-400" /> CCVideira Santos Dumont
-          </div>
-          {!done && (
-            <span className="text-xs font-medium text-muted-foreground" aria-live="polite">
-              Passo <strong className="text-foreground">{etapa + 1}</strong> de {etapas.length}
+      <form
+        onSubmit={onSubmit}
+        noValidate
+        className="relative mx-auto flex min-h-screen w-full max-w-lg flex-col px-6 pb-32 pt-6"
+      >
+        <div className="flex flex-col gap-5">
+          <div className="flex items-center justify-between">
+            <span className="inline-flex items-center rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-[11px] font-semibold tracking-[0.12em] text-foreground">
+              CCVIDEIRA SANTOS DUMONT
             </span>
+            <span className="text-xs font-medium text-muted-foreground" aria-live="polite">
+              {done ? "Concluído" : `Passo ${etapa + 1} de ${etapas.length}`}
+            </span>
+          </div>
+          <Progresso total={etapas.length} atual={done ? etapas.length - 1 : etapa} />
+        </div>
+
+        <div
+          key={done ? "fim" : etapaAtual}
+          className={cn(
+            "flex flex-col animate-in fade-in duration-500",
+            done
+              ? "zoom-in-95"
+              : direcao === "frente"
+                ? "slide-in-from-right-8"
+                : "slide-in-from-left-8",
           )}
-        </header>
+        >
+          {done && <Celebracao nome={primeiroNome} passos={form.proximosPassos} />}
 
-        {!done && <Progresso total={etapas.length} atual={etapa} />}
+          {!done && etapaAtual === "passos" && (
+            <>
+              <div className="mt-6 flex flex-col gap-3">
+                <h1 className={titulo}>Bem-vindo à família Videira!</h1>
+                <p className="text-base leading-relaxed text-muted-foreground">
+                  Qual o seu próximo passo? Pode escolher mais de um.
+                </p>
+              </div>
+              <div className="mt-6 flex flex-col gap-3">
+                {proximosPassos.map((p) => (
+                  <CartaoPasso
+                    key={p.id}
+                    {...p}
+                    selecionado={form.proximosPassos.includes(p.id)}
+                    onClick={() => toggle("proximosPassos", p.id)}
+                  />
+                ))}
+              </div>
+            </>
+          )}
 
-        {done ? (
-          <Celebracao nome={primeiroNome} passos={form.proximosPassos} />
-        ) : (
-          <form onSubmit={onSubmit} className="mt-8 flex flex-1 flex-col" noValidate>
-            <div
-              key={etapaAtual}
-              className={`flex-1 animate-in fade-in duration-500 ${direcao === "frente" ? "slide-in-from-right-8" : "slide-in-from-left-8"}`}
-            >
-              {etapaAtual === "passos" && (
-                <EtapaPassos
-                  selecionados={form.proximosPassos}
-                  onToggle={(id) => toggle("proximosPassos", id)}
+          {!done && etapaAtual === "nome" && (
+            <div className="mt-10 flex flex-col gap-4">
+              <Emoji label="aceno">👋</Emoji>
+              <h1 className={titulo}>Que alegria ter você aqui!</h1>
+              <label htmlFor="nome" className="text-lg text-muted-foreground">
+                Como podemos te chamar?
+              </label>
+              <CampoTexto
+                id="nome"
+                autoComplete="name"
+                placeholder="Seu nome completo"
+                value={form.nome}
+                onChange={(v) => set("nome", v)}
+              />
+            </div>
+          )}
+
+          {!done && etapaAtual === "contato" && (
+            <div className="mt-10 flex flex-col gap-4">
+              <h1 className={titulo}>
+                Prazer, {primeiroNome}!{" "}
+                <span role="img" aria-label="palmas">
+                  🙌
+                </span>
+              </h1>
+              <p className="text-lg text-muted-foreground">Por onde a gente fala com você?</p>
+              <div className="mt-4 flex flex-col gap-5">
+                <CampoTexto
+                  id="telefone"
+                  label="WhatsApp"
+                  icone="whatsapp-logo-bold"
+                  type="tel"
+                  inputMode="tel"
+                  autoComplete="tel"
+                  placeholder="(32) 99999-9999"
+                  value={form.telefone}
+                  onChange={(v) => set("telefone", formatarTelefone(v))}
                 />
-              )}
-
-              {etapaAtual === "nome" && (
-                <Etapa
-                  emoji="👋"
-                  titulo="Que alegria ter você aqui!"
-                  subtitulo="Como podemos te chamar?"
-                >
-                  <CampoTexto
-                    id="nome"
-                    label="Seu nome completo"
-                    autoComplete="name"
-                    placeholder="Ex.: Maria da Silva"
-                    value={form.nome}
-                    onChange={(v) => set("nome", v)}
-                  />
-                </Etapa>
-              )}
-
-              {etapaAtual === "contato" && (
-                <Etapa
-                  emoji="🙌"
-                  titulo={`Prazer, ${primeiroNome}!`}
-                  subtitulo="Por onde a gente fala com você?"
-                >
-                  <CampoTexto
-                    id="telefone"
-                    label="WhatsApp"
-                    type="tel"
-                    inputMode="tel"
-                    autoComplete="tel"
-                    placeholder="(32) 99999-9999"
-                    value={form.telefone}
-                    onChange={(v) => set("telefone", formatarTelefone(v))}
-                  />
-                  <CampoTexto
-                    id="email"
-                    label="E-mail"
-                    type="email"
-                    inputMode="email"
-                    autoComplete="email"
-                    placeholder="voce@email.com"
-                    value={form.email}
-                    onChange={(v) => set("email", v)}
-                    autoFocus={false}
-                  />
-                </Etapa>
-              )}
-
-              {etapaAtual === "sobre" && (
-                <Etapa
-                  emoji="✨"
-                  titulo="Conta um pouquinho sobre você"
-                  subtitulo="Assim a gente te conecta com as pessoas certas."
-                >
-                  <Grupo label="Faixa etária">
-                    <div className="grid grid-cols-3 gap-2">
-                      {faixasEtarias.map((f) => (
-                        <Opcao
-                          key={f}
-                          selecionada={form.faixaEtaria === f}
-                          onClick={() => set("faixaEtaria", f)}
-                        >
-                          {f}
-                        </Opcao>
-                      ))}
-                    </div>
-                  </Grupo>
-                  <Grupo label="Estado civil">
-                    <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
-                      {estadosCivis.map((e) => (
-                        <Opcao
-                          key={e.value}
-                          selecionada={form.estadoCivil === e.value}
-                          onClick={() => set("estadoCivil", e.value)}
-                        >
-                          {e.label}
-                        </Opcao>
-                      ))}
-                    </div>
-                  </Grupo>
-                </Etapa>
-              )}
-
-              {etapaAtual === "local" && (
-                <Etapa
-                  emoji="🏡"
-                  titulo="Onde você mora?"
-                  subtitulo={
-                    querGC
-                      ? "Assim encontramos um GC pertinho de você."
-                      : "Queremos estar perto de você."
-                  }
-                >
-                  <CampoTexto
-                    id="bairro"
-                    label="Bairro"
-                    autoComplete="address-level3"
-                    placeholder="Seu bairro"
-                    value={form.bairro}
-                    onChange={(v) => set("bairro", v)}
-                  />
-                  <CampoTexto
-                    id="cidade"
-                    label="Cidade"
-                    autoComplete="address-level2"
-                    placeholder="Sua cidade"
-                    value={form.cidade}
-                    onChange={(v) => set("cidade", v)}
-                    autoFocus={false}
-                  />
-                </Etapa>
-              )}
-
-              {etapaAtual === "primeira" && (
-                <Etapa
-                  emoji="⛪"
-                  titulo="É a sua primeira vez na Videira?"
-                  subtitulo="Sendo a primeira ou a centésima, você é muito bem-vindo!"
-                >
-                  <div className="grid grid-cols-2 gap-3">
-                    {(["Sim", "Não"] as const).map((opt) => (
-                      <Opcao
-                        key={opt}
-                        grande
-                        selecionada={form.primeiraVez === opt}
-                        onClick={() => set("primeiraVez", opt)}
-                      >
-                        {opt === "Sim" ? "Sim, primeira vez!" : "Não, já vim antes"}
-                      </Opcao>
-                    ))}
-                  </div>
-                </Etapa>
-              )}
-
-              {etapaAtual === "dias" && (
-                <Etapa
-                  emoji="📅"
-                  titulo="Qual o melhor dia para o seu GC?"
-                  subtitulo="Pode escolher mais de um."
-                >
-                  <div className="grid grid-cols-2 gap-3">
-                    {diasSemana.map((dia) => (
-                      <Opcao
-                        key={dia}
-                        grande
-                        selecionada={form.diasGC.includes(dia)}
-                        onClick={() => toggle("diasGC", dia)}
-                      >
-                        {dia}
-                      </Opcao>
-                    ))}
-                  </div>
-                </Etapa>
-              )}
+                <CampoTexto
+                  id="email"
+                  label="E-mail"
+                  icone="envelope-simple-bold"
+                  type="email"
+                  inputMode="email"
+                  autoComplete="email"
+                  placeholder="seuemail@exemplo.com"
+                  value={form.email}
+                  onChange={(v) => set("email", v)}
+                  autoFocus={false}
+                />
+              </div>
             </div>
+          )}
 
-            <div className="sticky bottom-4 mt-8 flex items-center gap-3">
-              {etapa > 0 && (
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={voltar}
-                  className="h-12 w-12 shrink-0 rounded-xl border-white/10 bg-white/5 p-0"
-                  aria-label="Voltar"
-                >
-                  <ArrowLeft className="h-5 w-5" />
-                </Button>
-              )}
-              <Button
-                type="submit"
-                disabled={loading || (etapaAtual === "passos" && form.proximosPassos.length === 0)}
-                className="h-12 flex-1 rounded-xl bg-green-500 text-base font-semibold text-black shadow-[0_10px_40px_-10px_rgba(34,197,94,0.7)] transition-transform hover:scale-[1.02] hover:bg-green-400 disabled:opacity-40"
-              >
-                {loading
-                  ? "Enviando..."
-                  : ultima
-                    ? "Dar meu próximo passo 🎉"
-                    : etapaAtual === "passos"
-                      ? `Próximo${form.proximosPassos.length ? ` (${form.proximosPassos.length})` : ""}`
-                      : "Continuar"}
-                {!loading && !ultima && <ArrowRight className="ml-1 h-5 w-5" />}
-              </Button>
-            </div>
-            {ultima && (
-              <p className="mt-3 text-center text-xs text-muted-foreground">
-                Seus dados estão seguros. Sem spam.
+          {!done && etapaAtual === "sobre" && (
+            <>
+              <h1 className={cn(titulo, "mt-6")}>Conta um pouquinho sobre você</h1>
+              <Grupo titulo="Faixa etária">
+                <div className="grid grid-cols-3 gap-3">
+                  {faixasEtarias.map((f) => (
+                    <button
+                      type="button"
+                      key={f}
+                      onClick={() => set("faixaEtaria", f)}
+                      aria-pressed={form.faixaEtaria === f}
+                      className={cn(
+                        "h-14 rounded-2xl border text-base transition-all active:scale-95",
+                        form.faixaEtaria === f ? selecionado : naoSelecionado,
+                      )}
+                    >
+                      {f}
+                    </button>
+                  ))}
+                </div>
+              </Grupo>
+              <Grupo titulo="Estado civil">
+                <div className="flex flex-wrap gap-3">
+                  {estadosCivis.map((e) => (
+                    <button
+                      type="button"
+                      key={e.value}
+                      onClick={() => set("estadoCivil", e.value)}
+                      aria-pressed={form.estadoCivil === e.value}
+                      className={cn(
+                        "min-h-12 rounded-full border px-5 text-base transition-all active:scale-95",
+                        form.estadoCivil === e.value ? selecionado : naoSelecionado,
+                      )}
+                    >
+                      {e.label}
+                    </button>
+                  ))}
+                </div>
+              </Grupo>
+            </>
+          )}
+
+          {!done && etapaAtual === "local" && (
+            <div className="mt-6 flex flex-col gap-4">
+              <Emoji label="casa">🏡</Emoji>
+              <h1 className={titulo}>Onde você mora?</h1>
+              <p className="text-base text-muted-foreground">
+                {querGC
+                  ? "Assim encontramos um GC pertinho de você."
+                  : "Queremos estar perto de você."}
               </p>
-            )}
-          </form>
-        )}
+              <div className="mt-2 flex flex-col gap-5">
+                <CampoTexto
+                  id="bairro"
+                  label="Bairro"
+                  autoComplete="address-level3"
+                  placeholder="Ex.: Centro"
+                  value={form.bairro}
+                  onChange={(v) => set("bairro", v)}
+                />
+                <CampoTexto
+                  id="cidade"
+                  label="Cidade"
+                  autoComplete="address-level2"
+                  placeholder="Ex.: Santos Dumont"
+                  value={form.cidade}
+                  onChange={(v) => set("cidade", v)}
+                  autoFocus={false}
+                />
+              </div>
+            </div>
+          )}
+
+          {!done && etapaAtual === "primeira" && (
+            <>
+              <h1 className={cn(titulo, "mt-6")}>É a sua primeira vez na Videira?</h1>
+              <div className="mt-6 flex flex-col gap-3">
+                {(
+                  [
+                    { valor: "Sim", texto: "Sim, primeira vez!", icone: "sparkle-bold" },
+                    { valor: "Não", texto: "Não, já vim antes", icone: "arrows-clockwise-bold" },
+                  ] as const
+                ).map((o) => {
+                  const ativo = form.primeiraVez === o.valor;
+                  return (
+                    <button
+                      type="button"
+                      key={o.valor}
+                      onClick={() => set("primeiraVez", o.valor)}
+                      aria-pressed={ativo}
+                      className={cn(
+                        "flex h-20 w-full items-center justify-between rounded-2xl border px-6 text-left text-lg transition-all active:scale-[0.98]",
+                        ativo ? selecionado : naoSelecionado,
+                      )}
+                    >
+                      <span className="flex items-center gap-4">
+                        <Icone nome={o.icone} className={ativo ? "" : "text-muted-foreground"} />
+                        {o.texto}
+                      </span>
+                      {ativo ? (
+                        <Icone nome="check-circle-fill" className="animate-pop" />
+                      ) : (
+                        <span className="size-6 rounded-full border border-white/20" />
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+            </>
+          )}
+
+          {!done && etapaAtual === "dias" && (
+            <>
+              <div className="mt-6 flex flex-col gap-4">
+                <Emoji label="calendário">📅</Emoji>
+                <h1 className={titulo}>Qual o melhor dia para o seu GC?</h1>
+                <p className="text-base text-muted-foreground">Pode escolher mais de um.</p>
+              </div>
+              <div className="mt-4 grid grid-cols-2 gap-3">
+                {diasSemana.map((dia) => (
+                  <button
+                    type="button"
+                    key={dia}
+                    onClick={() => toggle("diasGC", dia)}
+                    aria-pressed={form.diasGC.includes(dia)}
+                    className={cn(
+                      "flex h-24 items-center justify-center rounded-2xl border font-heading text-xl transition-all active:scale-95",
+                      form.diasGC.includes(dia) ? selecionado : naoSelecionado,
+                      "font-semibold",
+                    )}
+                  >
+                    {dia}
+                  </button>
+                ))}
+              </div>
+            </>
+          )}
+        </div>
 
         <Versiculo />
-      </main>
 
-      <footer className="relative border-t border-border/50 py-5 text-center text-xs text-muted-foreground">
-        © {new Date().getFullYear()} CCVideira Santos Dumont
-      </footer>
+        <div className="fixed inset-x-0 bottom-0 z-10 border-t border-white/10 bg-background/80 backdrop-blur-xl">
+          <div className="mx-auto flex w-full max-w-lg gap-3 px-6 py-4">
+            {done ? (
+              <button
+                type="button"
+                onClick={recomecar}
+                className="flex h-14 w-full items-center justify-center rounded-2xl bg-white text-base font-semibold text-background"
+              >
+                Voltar ao início
+              </button>
+            ) : (
+              <>
+                {etapa > 0 && (
+                  <button
+                    type="button"
+                    onClick={voltar}
+                    aria-label="Voltar"
+                    className="flex size-14 shrink-0 items-center justify-center rounded-2xl border border-white/10 bg-card text-foreground"
+                  >
+                    <Icone nome="arrow-left-bold" />
+                  </button>
+                )}
+                <button
+                  type="submit"
+                  disabled={
+                    loading || (etapaAtual === "passos" && form.proximosPassos.length === 0)
+                  }
+                  className="flex h-14 flex-1 items-center justify-center rounded-2xl bg-white text-base font-semibold text-background transition-all hover:bg-white/90 active:scale-[0.98] disabled:opacity-40"
+                >
+                  {rotuloBotao}
+                </button>
+              </>
+            )}
+          </div>
+        </div>
+      </form>
     </div>
   );
 }
@@ -467,16 +519,19 @@ function Index() {
 function Progresso({ total, atual }: { total: number; atual: number }) {
   return (
     <div
-      className="flex gap-1.5"
       role="progressbar"
+      className="flex gap-1.5"
       aria-valuemin={1}
       aria-valuemax={total}
       aria-valuenow={atual + 1}
     >
       {Array.from({ length: total }, (_, i) => (
-        <div key={i} className="h-1.5 flex-1 overflow-hidden rounded-full bg-white/10">
+        <div key={i} className="h-1.5 flex-1 overflow-hidden rounded-full bg-white/15">
           <div
-            className={`h-full rounded-full bg-green-500 transition-all duration-500 ${i <= atual ? "w-full" : "w-0"}`}
+            className={cn(
+              "h-full rounded-full bg-white transition-all duration-500",
+              i <= atual ? "w-full" : "w-0",
+            )}
           />
         </div>
       ))}
@@ -484,81 +539,69 @@ function Progresso({ total, atual }: { total: number; atual: number }) {
   );
 }
 
-function EtapaPassos({
-  selecionados,
-  onToggle,
+function CartaoPasso({
+  icone,
+  title,
+  desc,
+  selecionado: ativo,
+  onClick,
 }: {
-  selecionados: PassoId[];
-  onToggle: (id: PassoId) => void;
+  icone: NomeIcone;
+  title: string;
+  desc: string;
+  selecionado: boolean;
+  onClick: () => void;
 }) {
   return (
-    <div>
-      <h1 className="font-display text-4xl font-bold leading-[1.05] sm:text-5xl">
-        Bem-vindo à <span className="text-green-400">família</span> Videira!
-      </h1>
-      <p className="mt-4 text-base text-muted-foreground sm:text-lg">
-        Que alegria ter você com a gente. Qual o seu próximo passo?{" "}
-        <span className="text-foreground">Pode escolher mais de um.</span>
-      </p>
-
-      <div className="mt-8 grid gap-3 sm:grid-cols-2">
-        {proximosPassos.map(({ id, icon: Icon, title, desc }) => {
-          const selected = selecionados.includes(id);
-          return (
-            <button
-              type="button"
-              key={id}
-              onClick={() => onToggle(id)}
-              aria-pressed={selected}
-              className={`glass group relative flex items-start gap-4 rounded-2xl p-5 text-left transition-all duration-300 hover:-translate-y-0.5 sm:flex-col sm:gap-3 ${
-                selected
-                  ? "!border-green-500 !bg-green-500/15 ring-2 ring-green-500 shadow-[0_0_30px_rgba(34,197,94,0.35)]"
-                  : "hover:border-white/20"
-              }`}
-            >
-              <div
-                className={`inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl transition-all group-hover:scale-110 ${
-                  selected ? "bg-green-500 text-black" : "bg-white/10 text-foreground"
-                }`}
-              >
-                <Icon className="h-6 w-6" />
-              </div>
-              <div className="pr-6">
-                <h3 className="font-display text-lg font-bold">{title}</h3>
-                <p className="mt-1 text-sm text-muted-foreground">{desc}</p>
-              </div>
-              {selected && (
-                <span className="animate-pop absolute right-3 top-3 flex h-6 w-6 items-center justify-center rounded-full bg-green-500 text-black">
-                  <Check className="h-4 w-4" strokeWidth={3} />
-                </span>
-              )}
-            </button>
-          );
-        })}
-      </div>
-    </div>
+    <button
+      type="button"
+      onClick={onClick}
+      aria-pressed={ativo}
+      className={cn(
+        "flex w-full items-center gap-4 rounded-2xl border px-5 py-5 text-left transition-all duration-300 active:scale-[0.98]",
+        ativo
+          ? "border-white bg-white text-background shadow-[0_0_28px_rgba(255,255,255,0.22)]"
+          : "border-white/10 bg-card text-foreground hover:border-white/30",
+      )}
+    >
+      <span
+        className={cn(
+          "flex size-12 shrink-0 items-center justify-center rounded-xl",
+          ativo ? "bg-background/10" : "bg-white/5",
+        )}
+      >
+        <Icone nome={icone} />
+      </span>
+      <span className="flex flex-1 flex-col gap-0.5">
+        <span className="font-heading text-lg font-semibold tracking-tight">{title}</span>
+        <span className={cn("text-sm", ativo ? "opacity-75" : "text-muted-foreground")}>
+          {desc}
+        </span>
+      </span>
+      {ativo ? (
+        <span className="animate-pop flex size-7 shrink-0 items-center justify-center rounded-full bg-background text-foreground">
+          <Icone nome="check-bold" size={16} />
+        </span>
+      ) : (
+        <span className="flex size-7 shrink-0 rounded-full border border-white/20" />
+      )}
+    </button>
   );
 }
 
-function Etapa({
-  emoji,
-  titulo,
-  subtitulo,
-  children,
-}: {
-  emoji: string;
-  titulo: string;
-  subtitulo: string;
-  children: React.ReactNode;
-}) {
+function Emoji({ label, children }: { label: string; children: string }) {
   return (
-    <div>
-      <div className="animate-pop text-5xl" aria-hidden>
-        {emoji}
-      </div>
-      <h2 className="mt-4 font-display text-3xl font-bold leading-tight sm:text-4xl">{titulo}</h2>
-      <p className="mt-2 text-muted-foreground">{subtitulo}</p>
-      <div className="mt-8 space-y-5">{children}</div>
+    <span role="img" aria-label={label} className="animate-pop text-6xl leading-none">
+      {children}
+    </span>
+  );
+}
+
+function Grupo({ titulo: t, children }: { titulo: string; children: React.ReactNode }) {
+  return (
+    <div className="mt-6 flex flex-col gap-3">
+      <h2 className="font-heading text-lg font-semibold tracking-tight text-foreground">{t}</h2>
+      {children}
     </div>
   );
 }
@@ -566,69 +609,49 @@ function Etapa({
 function CampoTexto({
   id,
   label,
+  icone,
   value,
   onChange,
   autoFocus = true,
   ...rest
 }: {
   id: string;
-  label: string;
+  label?: string;
+  icone?: NomeIcone;
   value: string;
   onChange: (v: string) => void;
   autoFocus?: boolean;
-} & Omit<React.ComponentProps<typeof Input>, "id" | "value" | "onChange" | "autoFocus">) {
+} & Omit<React.ComponentProps<"input">, "id" | "value" | "onChange" | "autoFocus">) {
   const ref = useRef<HTMLInputElement>(null);
   useEffect(() => {
     if (autoFocus) ref.current?.focus();
   }, [autoFocus]);
-  return (
-    <div className="space-y-2">
-      <Label htmlFor={id}>{label}</Label>
-      <Input
+  const input = (
+    <div className="relative">
+      {icone && (
+        <Icone
+          nome={icone}
+          className="pointer-events-none absolute left-5 top-1/2 -translate-y-1/2 text-muted-foreground"
+        />
+      )}
+      <input
         ref={ref}
         id={id}
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="h-12 rounded-xl border-white/10 bg-white/5 text-base focus-visible:ring-green-500"
+        className={cn(campo, icone ? "pl-14 pr-5" : "px-5")}
         {...rest}
       />
     </div>
   );
-}
-
-function Grupo({ label, children }: { label: string; children: React.ReactNode }) {
+  if (!label) return input;
   return (
-    <div className="space-y-2">
-      <Label>{label}</Label>
-      {children}
+    <div className="flex flex-col gap-2">
+      <label htmlFor={id} className="text-sm font-medium text-foreground">
+        {label}
+      </label>
+      {input}
     </div>
-  );
-}
-
-function Opcao({
-  selecionada,
-  onClick,
-  grande,
-  children,
-}: {
-  selecionada: boolean;
-  onClick: () => void;
-  grande?: boolean;
-  children: React.ReactNode;
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      aria-pressed={selecionada}
-      className={`rounded-xl border font-medium transition-all active:scale-95 ${grande ? "px-4 py-5 text-base" : "px-3 py-3 text-sm"} ${
-        selecionada
-          ? "border-green-500 bg-green-500 text-black shadow-[0_0_20px_rgba(34,197,94,0.35)]"
-          : "border-white/10 bg-white/5 hover:border-green-500/50"
-      }`}
-    >
-      {children}
-    </button>
   );
 }
 
@@ -642,12 +665,12 @@ function Versiculo() {
   }, []);
   const v = versiculos[i];
   return (
-    <figure className="mt-10 min-h-[5.5rem] text-center" aria-live="polite">
+    <figure className="mt-auto min-h-[8rem] pt-10 text-center" aria-live="polite">
       <div key={i} className="animate-in fade-in slide-in-from-bottom-2 duration-700">
-        <blockquote className="font-display text-sm italic leading-relaxed text-foreground/80 sm:text-base">
+        <blockquote className="text-base italic leading-relaxed text-foreground/90">
           “{v.texto}”
         </blockquote>
-        <figcaption className="mt-2 text-xs font-semibold uppercase tracking-widest text-green-400">
+        <figcaption className="mt-2 text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
           {v.ref}
         </figcaption>
       </div>
@@ -657,46 +680,40 @@ function Versiculo() {
 
 function Celebracao({ nome, passos }: { nome: string; passos: PassoId[] }) {
   return (
-    <div className="mt-6 flex-1 animate-in fade-in zoom-in-95 duration-500">
+    <>
       <Confetti />
-      <div className="animate-pop text-6xl" aria-hidden>
-        🎉
+      <div className="mt-6 flex flex-col items-start gap-4">
+        <Emoji label="festa">🎉</Emoji>
+        <h1 className={titulo}>Bem-vindo à família, {nome}!</h1>
+        <p className="text-base leading-relaxed text-muted-foreground">
+          O céu está em festa e a gente também. Em breve alguém da nossa equipe vai te chamar no
+          WhatsApp.
+        </p>
       </div>
-      <h2 className="mt-4 font-display text-4xl font-bold leading-tight">
-        Bem-vindo à família, <span className="text-green-400">{nome}</span>!
-      </h2>
-      <p className="mt-3 text-muted-foreground">
-        O céu está em festa e a gente também. Você não vai caminhar sozinho: em breve alguém da
-        nossa equipe vai te chamar no WhatsApp.
-      </p>
-
-      <ul className="mt-8 space-y-3">
+      <div className="mt-6 flex flex-col gap-3">
+        <h2 className="font-heading text-lg font-semibold tracking-tight text-foreground">
+          Seus próximos passos
+        </h2>
         {proximosPassos
           .filter((p) => passos.includes(p.id))
-          .map(({ id, icon: Icon, title, proximo }, idx) => (
-            <li
+          .map(({ id, icone, title, proximo }, idx) => (
+            <div
               key={id}
-              className="glass flex items-start gap-4 rounded-2xl p-4 animate-in fade-in slide-in-from-bottom-4 duration-500"
+              className="flex gap-4 rounded-2xl border border-white/10 bg-card/80 p-4 backdrop-blur-xl animate-in fade-in slide-in-from-bottom-4 duration-500"
               style={{ animationDelay: `${200 + idx * 150}ms`, animationFillMode: "both" }}
             >
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-green-500 text-black">
-                <Icon className="h-5 w-5" />
+              <span className="flex size-12 shrink-0 items-center justify-center rounded-xl bg-white/5">
+                <Icone nome={icone} />
+              </span>
+              <div className="flex flex-col gap-1">
+                <span className="font-heading text-base font-semibold text-foreground">
+                  {title}
+                </span>
+                <span className="text-sm leading-relaxed text-muted-foreground">{proximo}</span>
               </div>
-              <div>
-                <h3 className="font-display font-bold">{title}</h3>
-                <p className="text-sm text-muted-foreground">{proximo}</p>
-              </div>
-            </li>
+            </div>
           ))}
-      </ul>
-
-      <p className="mt-6 flex items-start gap-3 rounded-2xl border border-green-500/30 bg-green-500/10 px-4 py-3 text-sm text-green-300">
-        <Gift className="mt-0.5 h-5 w-5 shrink-0" />
-        <span>
-          Presente liberado! Enviamos um <strong>curso gratuito</strong> para o seu e-mail. Confira
-          também a caixa de spam.
-        </span>
-      </p>
-    </div>
+      </div>
+    </>
   );
 }
